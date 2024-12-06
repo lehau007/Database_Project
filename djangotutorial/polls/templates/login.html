@@ -69,44 +69,46 @@
         </div>
 
         <div class="col-lg-8">
-          <form action="profile" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+          <form action="{% url 'login' %}" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            {% csrf_token %}
             <div class="row gy-4">
-
+        
+              <!-- Username Field -->
               <div class="col-md-12">
-                <input type="text" class="form-control" name="subject" placeholder="Username" required="">
+                <input type="text" class="form-control" name="username" placeholder="Username" required>
               </div>
-
+        
+              <!-- Password Field -->
               <div class="col-md-12">
-               <!-- <textarea class="form-control" name="message" rows="6" placeholder="Password" required=""></textarea> -->
-               <input type="text" class="form-control" name="subject" placeholder="Password" required="">
+                <input type="password" class="form-control" name="password" placeholder="Password" required>
               </div>
-
+        
+              <!-- Error Message -->
               <div class="col-md-12 text-center">
-                <div class="loading">Loading</div>
-                <div class="error-message"></div>
-                <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                <button type="submit">Log In</button>
-
-                <button style="margin-left: 26px;" onclick="location.href='{% url 'signup' %}'" type="submit">
+                {% if error %}
+                  <div class="error-message" style="color: red;">{{ error }}</div>
+                {% endif %}
+              </div>
+        
+              <!-- Buttons -->
+              <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary">Log In</button>
+                <button type="button" class="btn btn-secondary" style="margin-left: 26px;" onclick="location.href='{% url 'signup' %}'">
                   Sign up
                 </button>
               </div>
-
+              
             </div>
           </form>
-        </div><!-- End Contact Form -->
-
-      </div>
-
-    </div>
-
-  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'polls/vendor/php-email-form/validate.js' %}"></script>
-  <script src="{% static 'polls/vendor/aos/aos.js' %}"></script>
-  <script src="{% static 'polls/vendor/glightbox/js/glightbox.min.js' %}"></script>
-
-  <!-- Main JS File -->
-  <script src="{% static 'polls/js/main.js' %}"></script>
-
-</section><!-- /Contact Section -->
+        </div>
+        
+        <!-- End of Form -->
+        
+        <!-- Scripts -->
+        <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'polls/vendor/aos/aos.js' %}"></script>
+        <script src="{% static 'polls/vendor/glightbox/js/glightbox.min.js' %}"></script>
+        
+        <!-- Main JS File -->
+        <script src="{% static 'polls/js/main.js' %}"></script>
+        

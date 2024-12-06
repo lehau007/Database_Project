@@ -22,9 +22,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('signup/', views.signup, name='signup'),
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('signup/', views.signup_view, name='signup'),
+    path('login/', views.login_view, name='login'),
     path('', views.home, name='home'),
-    path('signup/success/', views.signup_success, name='signup_success'),
+    path('signup_success/', views.signup_success, name='signup_success'),
     path('profile/', views.profile, name='profile'),
 ]
