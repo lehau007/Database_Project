@@ -1331,7 +1331,7 @@ h6 {
   <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-item">
-      <a class="nav-link " href="index.html">
+      <a class="nav-link " href="{% url 'admin_dashboard' %}">
         <i class="bi bi-grid"></i>
         <span>Dashboard</span>
       </a>
@@ -1343,7 +1343,7 @@ h6 {
       </a>
       <ul id="operations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="view_contest.html">
+          <a href="{% url 'admin_contest' %}">
             <i class="bi bi-circle"></i><span>View Contest</span>
           </a>
         </li>
@@ -1510,7 +1510,7 @@ h6 {
     <li class="nav-heading">Pages</li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="users-profile.html">
+      <a class="nav-link collapsed" href="{% url 'profile' %}">
         <i class="bi bi-person"></i>
         <span>Profile</span>
       </a>
@@ -1558,15 +1558,14 @@ h6 {
               <div class="card info-card sales-card">
 
                 <div class="card-body">
-                  <h5 class="card-title">Participants <span> | This month</span></h5>
+                  <h5 class="card-title">Participants <span> | All</span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                         <i class="bi bi-people"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>145</h6>
-                      <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                      <h6>{{ student_cnt }}</h6>
 
                     </div>
                   </div>
@@ -1580,15 +1579,14 @@ h6 {
 
                 <div class="card info-card problems-card">
                   <div class="card-body">
-                    <h5 class="card-title">Problems Solved <span>| This Month</span></h5>
+                    <h5 class="card-title">Problems Solved <span>| All</span></h5>
               
                     <div class="d-flex align-items-center">
                       <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #2196F3;"> <!-- Blue background -->
                         <i class="bi bi-check-circle" style="color: #fff;"></i> <!-- White check-circle icon -->
                       </div>
                       <div class="ps-3">
-                        <h6>45</h6>
-                        <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                        <h6>{{ solved_problem_cnt }}</h6>
                       </div>
                     </div>
               
@@ -1602,15 +1600,14 @@ h6 {
 
                 <div class="card info-card submissions-card">
                   <div class="card-body">
-                    <h5 class="card-title">Submissions <span>| This Month</span></h5>
+                    <h5 class="card-title">Submissions <span>| All</span></h5>
               
                     <div class="d-flex align-items-center">
                       <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #FFD700;"> <!-- Gold background -->
                         <i class="bi bi-upload" style="color: #fff;"></i> <!-- White upload icon -->
                       </div>
                       <div class="ps-3">
-                        <h6>1244</h6>
-                        <span class="text-success small pt-1 fw-bold">15%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                        <h6>{{ sub_cnt }}</h6>
                       </div>
                     </div>
               
@@ -1922,21 +1919,21 @@ h6 {
                       },
                       data: [
                         {
-                          value: 1048,
+                          value: 300,
                           name: 'Easy',
                           itemStyle: {
                             color: '#28a745' // Green for Easy
                           }
                         },
                         {
-                          value: 735,
+                          value: 604,
                           name: 'Medium',
                           itemStyle: {
                             color: '#ffc107' // Yellow for Medium
                           }
                         },
                         {
-                          value: 580,
+                          value: 903,
                           name: 'Hard',
                           itemStyle: {
                             color: '#dc3545' // Red for Hard

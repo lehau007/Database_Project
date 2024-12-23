@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>See Participants</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .participants-list, .pending-participants {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .participants-header, .pending-header {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .table th, .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <!-- Contest List -->
+      <div class="col-md-6">
+        <div class="pending-participants">
+          <div class="pending-header">Contest List</div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Contest ID</th>
+                <th>Contest Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pending-body-contests">
+              {% for contest in contests %}
+                <tr>
+                  <td>{{ contest.id }}</td>
+                  <td>{{ contest.name }}</td>
+                  <td>
+                    <button class="btn btn-success accept-btn" data-action="accept" data-id="{{ contest.id }}" aria-label="Join {{ contest.name }}">
+                      Join
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pending Contests -->
+      <div class="col-md-6">
+        <div class="pending-participants">
+          <div class="pending-header">Pending Contests</div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Contest ID</th>
+                <th>Contest Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pending-body-participants">
+              {% for contest in pending_contests %}
+                <tr>
+                  <td>{{ contest.id }}</td>
+                  <td>{{ contest.name }}</td>
+                  <td>
+                    <button class="btn btn-danger reject-btn" data-action="reject" data-id="{{ contest.id }}" aria-label="Cancel {{ contest.name }}">
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+  <script>
+    // Event delegation for button actions
+    document.body.addEventListener('click', function (event) {
+      const target = event.target;
+
+      // Check if the clicked element is an accept or reject button
+      if (target.classList.contains('accept-btn') || target.classList.contains('reject-btn')) {
+        const action = target.dataset.action;
+        const contestId = target.dataset.id;
+
+        // CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value || '{{ csrf_token }}';
+
+        // Send the fetch request
+        fetch("{% url 'join_contest' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({ action, id: contestId })
+        })
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+          })
+          .then(data => {
+            if (data.message) {
+              alert(data.message);
+
+              // Remove the row from the table
+              const row = target.closest('tr');
+              row.remove();
+            } else {
+              console.warn('No message provided in response:', data);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+          });
+      }
+    });
+  </script>
+</body>
+</html>

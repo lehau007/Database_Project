@@ -117,7 +117,7 @@
             <div class="card-body">
                 <h5 class="card-title">Programming Questions</h5>
                 {% for q in question %}
-                    <a href="{% url 'question_details' %}?info={{ q.id }}" target="_blank" style="text-decoration: none; color: inherit;">
+                    <a href="{% url 'question' %}?info={{ q.id }}" target="_blank" style="text-decoration: none; color: inherit;">
                       <div class="alert alert-primary alert-dismissible fade show" role="alert">
                         {{ q.name }}
                       </div>

@@ -33,6 +33,7 @@ urlpatterns = [
     path('view_contests/', views.student_view_contest, name='student_view_contest'),
     path('view_contests/questions/', views.student_question_view, name='student_view_question'), 
     path('view_contests/questions/display/<int:question_id>/', views.display_question, name='question_details'),
+    path('view_contest/join/', views.join_contest, name='join_contest'),
     
 
     # ADMIN BLOCK

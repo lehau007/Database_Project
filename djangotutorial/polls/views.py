@@ -32,14 +32,140 @@ current_contest = -1
 admin_id = 1
 
 """---------------------------------------STUDENT BLOCK-----------------------------------------"""
-def student_view(request):
+def join_contest(request):
+    global isLogin, isAdmin, student_id
+
     if not isLogin:
         return render(request, 'polls/protect_not_login.html')
     
     if isAdmin:
         return render(request, 'polls/protect_student_page.html')
     
-    return render(request, 'polls/student_dashboard.html')
+    if request.method == "POST":
+        data = json.loads(request.body)
+        action = data.get('action')
+        contest_id = data.get('id')
+        
+        if action == "accept":
+            query = """
+                INSERT INTO participants (participant, contest_id, student_id, point)
+                VALUES (%s, %s, %s, 0)
+            """
+            with connection.cursor() as cursor:
+                cursor.execute(query, ("Waiting", contest_id, student_id, ))
+        elif action == "reject":
+            query = """
+                DELETE FROM participants
+                WHERE student_id = %s AND contest_id = %s
+            """
+            with connection.cursor() as cursor:
+                cursor.execute(query, (student_id, contest_id))
+        else:
+            return JsonResponse({'message': 'Invalid action'}, status=400)
+
+        return JsonResponse({'message': 'Action processed successfully'})
+    
+    # Query contests the student has not joined
+    available_query = """
+        SELECT DISTINCT c.contest_id, c.name
+        FROM contest AS c
+        LEFT JOIN participants AS p USING (contest_id)
+        WHERE c.contest_id NOT IN (
+            SELECT contest_id FROM participants WHERE student_id = %s
+        )
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(available_query, (student_id,))
+        contests = cursor.fetchall()
+    contests = [{'id': row[0], 'name': row[1]} for row in contests]
+
+    # Query contests the student has joined and are pending approval
+    pending_query = """
+        SELECT c.contest_id, c.name
+        FROM contest AS c
+        JOIN participants AS p USING (contest_id)
+        WHERE p.student_id = %s AND p.participant = 'Waiting'
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(pending_query, (student_id,))
+        pending_contests = cursor.fetchall()
+    pending_contests = [{'id': row[0], 'name': row[1]} for row in pending_contests]
+
+    return render(request, 'polls/join_contest.html', {
+        'contests': contests,
+        'pending_contests': pending_contests
+    })
+
+def student_view(request):
+    if not isLogin:
+        return render(request, 'polls/protect_not_login.html')
+    
+    if isAdmin:
+        return render(request, 'polls/protect_student_page.html')
+    query = "select (first_name || ' ' || last_name) as name from student where student_id = %s"
+    with connection.cursor() as cursor:
+        cursor.execute(query, (student_id, ))
+        name = cursor.fetchone()
+    name = name[0]
+
+    # cnt student
+    query = "SELECT COUNT(*) FROM student"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        student_count = cursor.fetchone()
+    student_count = student_count[0]
+    
+    # problem_cnt
+    query = "SELECT COUNT(*) FROM submission WHERE status = 'Accepted'"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        solved_problem_cnt = cursor.fetchone()
+    solved_problem_cnt = solved_problem_cnt[0]
+
+    query = "SELECT COUNT(*) FROM submission"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        sub_cnt = cursor.fetchone()
+    sub_cnt = sub_cnt[0]
+
+    # Contest this week
+    query = "SELECT DATE(created_at) AS submission_date, status, COUNT(*) AS count FROM submission WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' GROUP BY DATE(created_at), status ORDER BY submission_date, status;"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        contest_report = cursor.fetchall()
+
+    query = "SELECT COUNT(*) FROM question WHERE level_id = 3"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        hard_cnt = cursor.fetchone()
+    hard_cnt = hard_cnt[0]
+
+    query = "SELECT COUNT(*) FROM question WHERE level_id = 2"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        medium_cnt = cursor.fetchone()
+    medium_cnt = medium_cnt[0]
+
+
+    query = "SELECT COUNT(*) FROM question WHERE level_id = 1"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        easy_cnt = cursor.fetchone()
+    easy_cnt = easy_cnt[0]
+
+    chart_data = [
+        {"value": 700, "name": "Easy", "color": "#28a745"},
+        {"value": 400, "name": "Medium", "color": "#ffc107"},
+        {"value": 200, "name": "Hard", "color": "#dc3545"}
+    ]
+    
+    return render(request, 'polls/student_dashboard.html', {
+        'name': name,
+        'student_cnt': student_count, 
+        'solved_problem_cnt': solved_problem_cnt, 
+        'chart_data': chart_data,
+        'sub_cnt': sub_cnt,
+    })
 
 def student_view_contest(request):
     if not isLogin:
@@ -374,8 +500,90 @@ def admin_view(request):
     
     if not isAdmin:
         return render(request, 'polls/protect_admin_page.html')
+    """
+    - Participants | this month will change to Participants | All
+
+SELECT COUNT(*) FROM student
+
+-- Problems Solved | this month will change to Problem Solved | All
+SELECT COUNT(*)
+FROM submission
+WHERE status = 'Accepted'
+
+-- Submissions | All
+
+SELECT COUNT(*)
+FROM submission
+
+-- Contest Reports | This week
+
+SELECT 
+    DATE(created_at) AS submission_date, 
+    status, 
+    COUNT(*) AS count
+FROM submission
+WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+GROUP BY DATE(created_at), status
+ORDER BY submission_date, status;
+"""
+    # cnt student
+    query = "SELECT COUNT(*) FROM student"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        student_count = cursor.fetchone()
+    student_count = student_count[0]
     
-    return render(request, 'polls/new_admin_dashboard.html')
+    # problem_cnt
+    query = "SELECT COUNT(*) FROM submission WHERE status = 'Accepted'"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        solved_problem_cnt = cursor.fetchone()
+    solved_problem_cnt = solved_problem_cnt[0]
+
+    # Contest this week
+    query = "SELECT DATE(created_at) AS submission_date, status, COUNT(*) AS count FROM submission WHERE created_at >= CURRENT_DATE - INTERVAL '7 days' GROUP BY DATE(created_at), status ORDER BY submission_date, status;"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        contest_report = cursor.fetchall()
+
+    query = "SELECT COUNT(*) FROM question WHERE level_id = 3"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        hard_cnt = cursor.fetchone()
+    hard_cnt = hard_cnt[0]
+
+    query = "SELECT COUNT(*) FROM question WHERE level_id = 2"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        medium_cnt = cursor.fetchone()
+    medium_cnt = medium_cnt[0]
+
+
+    query = "SELECT COUNT(*) FROM question WHERE level_id = 1"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        easy_cnt = cursor.fetchone()
+    easy_cnt = easy_cnt[0]
+
+    # print(easy_cnt, medium_cnt, hard_cnt)
+    chart_data = [
+        {"value": 700, "name": "Easy", "color": "#28a745"},
+        {"value": 400, "name": "Medium", "color": "#ffc107"},
+        {"value": 200, "name": "Hard", "color": "#dc3545"}
+    ]
+
+    query = "SELECT COUNT(*) FROM submission"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        sub_cnt = cursor.fetchone()
+    sub_cnt = sub_cnt[0]
+
+    return render(request, 'polls/new_admin_dashboard.html', {
+        'student_cnt': student_count, 
+        'solved_problem_cnt': solved_problem_cnt, 
+        'chart_data': chart_data,
+        'sub_cnt': sub_cnt,
+    })
 
 def add_question(request):
     global isLogin, isAdmin, current_contest
@@ -445,6 +653,7 @@ def view_leadboard(request):
     data = []
     for d in datas:
         data.append({'id': i, 'name': d[0], 'point': d[1]})
+        i += 1
     
     # print(data)
 
