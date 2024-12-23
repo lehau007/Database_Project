@@ -33,7 +33,7 @@
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename"><span> Hust</span>ack </h1>
@@ -84,7 +84,7 @@
             <div class="d-flex">
               <a href="{% url 'signup' %}" class="btn-get-started"> Sign up </a>
               <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
-              <a href="admin_dashboard.html" class="btn-get-started"> ADMIN </a>
+              <a href="{% url 'admin_dashboard' %}" class="btn-get-started"> ADMIN </a>
             </div>
           </div>
           <div class="col-lg-6 order-1 order-lg-2">

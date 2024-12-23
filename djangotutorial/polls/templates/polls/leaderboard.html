@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .leaderboard-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .leaderboard-header {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .table-leaderboard th {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+    }
+
+    .table-leaderboard td, 
+    .table-leaderboard th {
+      vertical-align: middle;
+    }
+
+    .rank {
+      font-weight: bold;
+      font-size: 18px;
+      color: #007bff;
+    }
+
+    .name {
+      font-size: 16px;
+    }
+
+    .score {
+      font-weight: bold;
+    }
+
+    .medal {
+      font-size: 20px;
+    }
+
+    .gold {
+      color: #ffd700;
+    }
+
+    .silver {
+      color: #c0c0c0;
+    }
+
+    .bronze {
+      color: #cd7f32;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="leaderboard-card">
+      <div class="leaderboard-header">Leaderboard</div>
+      <button id="reverse-btn" class="btn btn-primary my-3">Reverse Leaderboard</button>
+      <table class="table table-bordered table-hover table-leaderboard">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          {% for data in datas %}
+          <tr>
+            
+            <td class="rank gold medal">{{data.id}}</td>
+            <td class="name">{{data.name}}</td>
+            <td class="score">{{data.point}}</td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- Custom JS -->
+  <script>
+    document.getElementById('reverse-btn').addEventListener('click', function() {
+      const tbody = document.getElementById('leaderboard-body');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.reverse();
+      tbody.innerHTML = '';
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  </script>
+</body>
+
+</html>

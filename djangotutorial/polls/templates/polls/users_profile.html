@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 {% load static %}
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>operations / Contest - NiceAdmin Bootstrap Template</title>
+  <title>Users / Profile</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -44,9 +45,9 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="{% url 'admin_dashboard' %}" class="logo d-flex align-items-center">
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center">
         <img src="{% static 'polls/img/logo_2.png' %}" alt="">
-        <span class="d-none d-lg-block">Admin</span>
+        <span class="d-none d-lg-block">ADMIN</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -71,7 +72,10 @@
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="{% static 'polls/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">ADMIN</span>
+            {% for name in admin_name %}
+              
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{name.name}}</span>
+            {% endfor %}
           </a><!-- End Profile Iamge Icon -->
         </li><!-- End Profile Nav -->
 
@@ -79,7 +83,6 @@
     </nav><!-- End Icons Navigation -->
 
   </header><!-- End Header -->
-
 
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
@@ -94,82 +97,82 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " data-bs-target="#operations-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>operations</span><i class="bi bi-chevron-down ms-auto"></i>
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Components</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="operations-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="view_contest.html" class="active">
-              <i class="bi bi-circle"></i><span>View Contest</span>
+            <a href="components-alerts.html">
+              <i class="bi bi-circle"></i><span>Alerts</span>
             </a>
           </li>
           <li>
-            <a href="operations-accordion.html">
+            <a href="components-accordion.html">
               <i class="bi bi-circle"></i><span>Accordion</span>
             </a>
           </li>
           <li>
-            <a href="operations-badges.html">
+            <a href="components-badges.html">
               <i class="bi bi-circle"></i><span>Badges</span>
             </a>
           </li>
           <li>
-            <a href="operations-breadcrumbs.html">
+            <a href="components-breadcrumbs.html">
               <i class="bi bi-circle"></i><span>Breadcrumbs</span>
             </a>
           </li>
           <li>
-            <a href="operations-buttons.html">
+            <a href="components-buttons.html">
               <i class="bi bi-circle"></i><span>Buttons</span>
             </a>
           </li>
           <li>
-            <a href="operations-cards.html">
+            <a href="components-cards.html">
               <i class="bi bi-circle"></i><span>Cards</span>
             </a>
           </li>
           <li>
-            <a href="operations-carousel.html">
+            <a href="components-carousel.html">
               <i class="bi bi-circle"></i><span>Carousel</span>
             </a>
           </li>
           <li>
-            <a href="operations-list-group.html">
+            <a href="components-list-group.html">
               <i class="bi bi-circle"></i><span>List group</span>
             </a>
           </li>
           <li>
-            <a href="operations-modal.html">
+            <a href="components-modal.html">
               <i class="bi bi-circle"></i><span>Modal</span>
             </a>
           </li>
           <li>
-            <a href="operations-tabs.html">
+            <a href="components-tabs.html">
               <i class="bi bi-circle"></i><span>Tabs</span>
             </a>
           </li>
           <li>
-            <a href="operations-pagination.html">
+            <a href="components-pagination.html">
               <i class="bi bi-circle"></i><span>Pagination</span>
             </a>
           </li>
           <li>
-            <a href="operations-progress.html">
+            <a href="components-progress.html">
               <i class="bi bi-circle"></i><span>Progress</span>
             </a>
           </li>
           <li>
-            <a href="operations-spinners.html">
+            <a href="components-spinners.html">
               <i class="bi bi-circle"></i><span>Spinners</span>
             </a>
           </li>
           <li>
-            <a href="operations-tooltips.html">
+            <a href="components-tooltips.html">
               <i class="bi bi-circle"></i><span>Tooltips</span>
             </a>
           </li>
         </ul>
-      </li><!-- End operations Nav -->
+      </li><!-- End Components Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
@@ -266,7 +269,7 @@
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
+        <a class="nav-link " href="users-profile.html">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
@@ -321,88 +324,196 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Contest</h1>
+      <h1>Profile</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item">operations</li>
-          <li class="breadcrumb-item active">Contest</li>
+          <li class="breadcrumb-item">Users</li>
+          <li class="breadcrumb-item active">Profile</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
-    <div class="content">
-      <!-- Add Contest Button -->
-      <button class="btn btn-primary" onclick="addContest()">Add Contest</button>
-    </div><!-- End Content -->
-
-    <section class="section">
+    <section class="section profile">
       <div class="row">
-        <!-- Programming Contest -->
-        <div class="col-lg-6">
+        <div class="col-xl-4">
+
           <div class="card">
-            <div class="card-body">
-          
-              <h5 class="card-title">Programming Contests</h5>
-          
-              {% for contest in contests %}
-                <a href="{% url 'question' %}?info={{ contest.id }}" target="_blank" style="text-decoration: none; color: inherit;">
-                  <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                    {{ contest.name }}
-                  </div>
-                </a>
+            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+              <img src="{% static 'polls/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+              {% for name in admin_name %}
+              <h2>{{name.name}}</h2>
               {% endfor %}
-          
+              <h3>Web Backend</h3>
+              <div class="social-links mt-2">
+                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+              </div>
             </div>
           </div>
+
         </div>
-    
-        <!-- Author -->
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Author</h5>
-              <div class="alert alert-primary bg-primary text-light border-0 fade show" role="alert">
-                The author of the corresponding contest to the left
-              </div>
 
-              <div class="alert alert-primary bg-primary text-light border-0 fade show" role="alert">
-                The author of the corresponding contest to the left
-              </div>
+        <div class="col-xl-8">
+
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <ul class="nav nav-tabs nav-tabs-bordered">
+
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
+                </li>
+
+              </ul>
+              <div class="tab-content pt-2">
+
+                <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                  <h5 class="card-title">About</h5>
+                  <p class="small fst-italic">Pratice makes perfect</p>
+
+                  <h5 class="card-title">Profile Details</h5>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                    {% for name in admin_name %}
+                      <div class="col-lg-9 col-md-8">{{name.name}}</div>
+                    {% endfor %}
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Sign in as </div>
+                    <div class="col-lg-9 col-md-8">Student / Admin</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Country</div>
+                    <div class="col-lg-9 col-md-8">Vietnam</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Email</div>
+                    <div class="col-lg-9 col-md-8">lehau_noob@example.com</div>
+                  </div>
+
+                </div>
+
+                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+                  <!-- Profile Edit Form -->
+                  <form>
+                    <div class="row mb-3">
+                      <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                      <div class="col-md-8 col-lg-9">
+                        <img src="{% static 'polls/img/profile-img.jpg' %}" alt="Profile">
+                        <div class="pt-2">
+                          <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="company" class="col-md-4 col-lg-3 col-form-label">Company</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="company" type="text" class="form-control" id="company" value="Lueilwitz, Wisoky and Leuschke">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Job" class="col-md-4 col-lg-3 col-form-label">Job</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="job" type="text" class="form-control" id="Job" value="Web Designer">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Country" class="col-md-4 col-lg-3 col-form-label">Country</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="country" type="text" class="form-control" id="Country" value="USA">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="email" type="email" class="form-control" id="Email" value="k.anderson@example.com">
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form><!-- End Profile Edit Form -->
+
+                </div>
+
+                <div class="tab-pane fade pt-3" id="profile-change-password">
+                  <!-- Change Password Form -->
+                  <form action="{% url 'profile' %}" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                    {% csrf_token %}
+                    <div class="row gy-4">
+                      <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input type="password" class="form-control" name="currentPassword" placeholder="Password" required>
+                      </div>
+              
+                      <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input type="password" class="form-control" name="newPassword" placeholder="Password" required>
+                      </div>
+
+                      <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input type="password" class="form-control" name="renewPassword" placeholder="Password" required>
+                      </div>
+
+                    <!-- Error Message -->
+                      <div class="col-md-12 text-center">
+                        {% if error %}
+                          <div class="error-message" style="color: red;">{{ error }}</div>
+                        {% endif %}
+                      </div>
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                      </div>
+                    </div>
+                  </form><!-- End Change Password Form -->
+
+                </div>
+
+              </div><!-- End Bordered Tabs -->
 
             </div>
           </div>
+
         </div>
       </div>
     </section>
-    
-    
 
   </main><!-- End #main -->
 
-  <!-- ======= Footer ======= -->
-  <footer id="footer" class="footer">
-    <div class="copyright">
-      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
-    </div>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-    </div>
-  </footer><!-- End Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
-  <script>
-    function addContest() {
-      // Opens a new window or tab with the "Add Contest" page
-      window.open("{% url 'add_contest' %}", '_blank', 'width=600,height=400');
-    }
-  </script>
   <script src="{% static 'polls/vendor/apexcharts/apexcharts.min.js' %}"></script>
   <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'polls/vendor/chart.js/chart.umd.js' %}"></script>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'polls/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'polls/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+  
+  <!-- Main CSS File -->
+  <link href="{% static 'polls/css/main.css' %}" rel="stylesheet">
+
+</head>
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Contest Management</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'polls/img/favicon.png' %}" rel="icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-row {
+      display: flex;
+      /* justify-content: center; */
+      
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .btn-row .btn {
+      background-color: #007bff;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 10px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 300px;
+      text-decoration: none;
+      margin-right: 450px;
+    } 
+
+    .btn-row .btn:hover {
+      background-color: #0056b3;
+      text-decoration: none;
+    }
+
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      height: 100vh;
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .alert {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<section class="section">
+    <div class="btn-row">
+      <a href="{% url 'add_question' %}" class="btn">Add question</a>
+      <a href="{% url 'view_leadboard' %}" class="btn">View leaderboard</a>
+      <a href="{% url 'see_participants' %}" class="btn">See Participants</a>
+    </div>
+    <div class="row">
+      <!-- Card 1 on the left -->
+      <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Programming Questions</h5>
+                {% for q in question %}
+                    <a href="{% url 'question_details' %}?info={{ q.id }}" target="_blank" style="text-decoration: none; color: inherit;">
+                      <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                        {{ q.name }}
+                      </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>  
+      </div>         
+  
+      <!-- Card 2 on the right -->
+      <div class="col-lg-6">
+        <a href="submission_in_contest.html" target="_blank" style="text-decoration: none; color: inherit;">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Submission</h5>
+              
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                This is for accept submission
+              </div>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                This is for the failed submission
+              </div>
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                This is for the partial submission
+              </div>
+              
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+  
+
+<!-- Vendor JS Files -->
+<script src="{% static 'polls/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'polls/vendor/chart.js/chart.umd.js' %}"></script>
+<script src="{% static 'polls/vendor/echarts/echarts.min.js' %}"></script>
+<script src="{% static 'polls/vendor/quill/quill.js' %}"></script>
+<script src="{% static 'polls/vendor/simple-datatables/simple-datatables.js' %}"></script>
+<script src="{% static 'polls/vendor/tinymce/tinymce.min.js' %}"></script>
+<script src="{% static 'polls/vendor/php-email-form/validate.js' %}"></script>
+
+<!-- Template Main JS File -->
+<script src="{% static 'polls/js/main.js' %}"></script>

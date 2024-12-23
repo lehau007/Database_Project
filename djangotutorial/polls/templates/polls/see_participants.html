@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>See Participants</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .participants-list, .pending-participants {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .participants-header, .pending-header {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .participants-list ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .participants-list li {
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .pending-participants table {
+      width: 100%;
+    }
+
+    .pending-participants th, .pending-participants td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <!-- Participants List -->
+      <div class="col-md-6">
+        <div class="participants-list">
+          <div class="participants-header">Participants</div>
+          <ul id="participants">
+            {% for participant in participants %}
+              <li>{{ participant.name }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pending Participants -->
+      <div class="col-md-6">
+        <div class="pending-participants">
+          <div class="pending-header">Pending Participants</div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pending-body">
+              {% for participant in pending_participants %}
+                <tr>
+                  <td>{{participant.id}}</td>
+                  <td>{{participant.name}}</td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-success accept-btn" data-action="accept" data-id="123">Accept</button>
+                      <button class="btn btn-danger reject-btn" data-action="reject" data-id="123">Reject</button>
+                    </div>
+                    <script>
+                      document.querySelectorAll('.btn-group button').forEach(button => {
+                          button.addEventListener('click', function() {
+                              const action = this.getAttribute('data-action');
+                              const id = this.getAttribute('data-id');
+                              
+                              fetch("{% url 'see_participants' %}", {
+                                  method: 'POST',
+                                  headers: {
+                                      'Content-Type': 'application/json',
+                                      'X-CSRFToken': '{{ csrf_token }}' // Ensure CSRF protection
+                                  },
+                                  body: JSON.stringify({ action: action, id: id })
+                              })
+                              .then(response => response.json())
+                              .then(data => {
+                                  alert(data.message); // Show the response message
+                              })
+                              .catch(error => console.error('Error:', error));
+                          });
+                      });
+                    </script>
+                  
+                  </td>
+                </tr>  
+              {% endfor %} 
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    // Event delegation for accept/reject buttons
+    document.getElementById('pending-body').addEventListener('click', function(event) {
+      const target = event.target;
+
+      if (target.classList.contains('accept-btn')) {
+        const row = target.closest('tr');
+        const name = row.querySelector('td:nth-child(2)').innerText;
+        alert(`${name} has been ACCEPTED.`);
+        row.remove(); // Remove the row after acceptance
+      }
+
+      if (target.classList.contains('reject-btn')) {
+        const row = target.closest('tr');
+        const name = row.querySelector('td:nth-child(2)').innerText;
+        alert(`${name} has been REJECTED.`);
+        row.remove(); // Remove the row after rejection
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+/* General Reset */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #212529;
+  }
+  
+  /* Section Styling */
+  .section {
+    padding: 20px;
+  }
+  
+  /* Card Styling */
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Card Body */
+  .card-body {
+    padding: 20px;
+  }
+  
+  /* Card Title */
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 15px;
+  }
+  
+  /* List Group */
+  .list-group {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .list-group-item {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  }
+  
+  .list-group-item:hover {
+    background-color: #f1f1f1;
+    color: #007bff;
+  }
+  
+  /* Links */
+  .list-group-item a {
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: inherit;
+  }
+  
+  .list-group-item a:hover {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  

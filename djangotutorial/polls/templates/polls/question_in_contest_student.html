@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Contest Management</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'polls/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'polls/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-row {
+      display: flex;
+      /* justify-content: center; */
+      
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .btn-row .btn {
+      background-color: #007bff;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 10px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 300px;
+      text-decoration: none;
+      margin-right: 450px;
+    } 
+
+    .btn-row .btn:hover {
+      background-color: #0056b3;
+      text-decoration: none;
+    }
+
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      height: 100vh;
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .alert {
+      margin-bottom: 10px;
+    }
+    .alert-light-green {
+    background-color: #90ee90;
+    color: black;
+}
+
+.alert-light-red {
+    background-color: #f08080;
+    color: black;
+}
+
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    
+    <!-- Cards Section -->
+    <div class="row">
+      <!-- Card 1 on the left -->
+      <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Programming Questions</h5>
+                {% for q in question %}
+                    <a href="{% url 'question_details' question_id=q.id %}" target="_blank" style="text-decoration: none; color: inherit;">
+                      <div class="alert alert-dismissible fade show {% if q.isAccept %}alert-light-green{% else %}alert-light-red{% endif %}" role="alert">
+                        {{ q.name }}
+                      </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>  
+      </div>    
+
+      <!-- Card 2 on the right -->
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-body">
+        
+            <h5 class="card-title">Addition infomation</h5>
+        
+            {% for q in question %}
+                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                    Level: {{ q.level }} | Points: {{ q.point }}
+                </div>
+            {% endfor %}
+        
+          </div>
+        </div> 
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+
+</html>

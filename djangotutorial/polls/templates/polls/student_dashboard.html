@@ -1244,21 +1244,21 @@ h6 {
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  <title>Dashboard - Student</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
   <link href="{% static 'polls/img/favicon.png' %}" rel="icon">
-  <link href="{% static 'polls//img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+  <link href="{% static 'polls/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="{% static 'polls//vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'polls//vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
   <link href="{% static 'polls/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
   <link href="{% static 'polls/vendor/quill/quill.snow.css' %}" rel="stylesheet">
   <link href="{% static 'polls/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
@@ -1285,7 +1285,7 @@ h6 {
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
         <img src="{% static 'polls/img/logo_2.png' %}" alt="">
-        <span class="d-none d-lg-block">Admin</span>
+        <span class="d-none d-lg-block">Hustack</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -1310,7 +1310,7 @@ h6 {
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="{% static 'polls/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">ADMIN</span>
+            <span class="d-none d-md-block dropdown-toggle ps-2">Name_student_here</span>
           </a><!-- End Profile Iamge Icon -->
         </li><!-- End Profile Nav -->
 
@@ -1339,12 +1339,12 @@ h6 {
     </li><!-- End Dashboard Nav -->
 
     <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#Operations-nav" data-bs-toggle="collapse" href="#">
+      <a class="nav-link collapsed" data-bs-target="#operations-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-menu-button-wide"></i><span>Operations</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <ul id="Operations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+      <ul id="operations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="{% url 'admin_contest' %}">
+          <a href="{% url 'student_view_contest' %}">
             <i class="bi bi-circle"></i><span>View Contest</span>
           </a>
         </li>
@@ -1544,20 +1544,6 @@ h6 {
         <span>Login</span>
       </a>
     </li><!-- End Login Page Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="pages-error-404.html">
-        <i class="bi bi-dash-circle"></i>
-        <span>Error 404</span>
-      </a>
-    </li><!-- End Error 404 Page Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="pages-blank.html">
-        <i class="bi bi-file-earmark"></i>
-        <span>Blank</span>
-      </a>
-    </li><!-- End Blank Page Nav -->
 
   </ul>
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ question.title }}</title>
+</head>
+<body>
+    <h1>{{ question.title }}</h1>
+    
+    <p><strong>Difficulty:</strong> {{ question.difficulty }}</p>
+    
+    <p><strong>Description:</strong></p>
+    {% for line in description_lines %}
+        <p>{{ line }}</p>
+    {% endfor %}
+    
+    <p><strong>Input:</strong></p>
+    {% for line in input_lines %}
+        <p>{{ line }}</p>
+    {% endfor %}
+    
+    <p><strong>Output:</strong></p>
+    {% for line in output_lines %}
+        <p>{{ line }}</p>
+    {% endfor %}
+    
+    <p><strong>Constraints:</strong></p>
+    {% for line in constraints_lines %}
+        <p>{{ line }}</p>
+    {% endfor %}
+    
+    <p><strong>Example:</strong></p>
+    {% for line in example_lines %}
+        <p>{{ line }}</p>
+    {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="code" rows="10" cols="50"></textarea><br><br>
+        <label for="language_id">Language:</label>
+        <select name="language_id">
+            <option value="54">C++</option>
+            <option value="71">Python 3</option>
+        </select><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="results">
+    </div>
+
+</body>
+</html>

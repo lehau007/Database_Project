@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Question</title>
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <script src="{% static 'polls/vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Add Question</h1>
+
+    <!-- Option to choose between adding new question or selecting from database -->
+    <div class="mb-3">
+      <label class="form-label">Choose an option:</label>
+      <div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="questionOption" id="addNewQuestion" value="new" checked>
+          <label class="form-check-label" for="addNewQuestion">Create a New Question</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="questionOption" id="chooseFromDatabase" value="existing">
+          <label class="form-check-label" for="chooseFromDatabase">Choose from Database</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section for adding a new question -->
+    <div id="newQuestionSection">
+      <form id="addQuestionForm" action="{% url 'add_question' %}" method="POST">
+        {% csrf_token %}
+        <!-- Question Title -->
+        <div class="mb-3">
+          <label for="questionTitle" class="form-label">Question Title</label>
+          <input type="text" class="form-control" id="questionTitle" name="questionTitle" placeholder="Enter question title" required>
+        </div>
+        <!-- Question Description -->
+        <div class="mb-3">
+          <label for="questionDescription" class="form-label">Description</label>
+          <textarea class="form-control" id="questionDescription" name="questionDescription" rows="5" placeholder="Enter question description" required></textarea>
+        </div>
+        <!-- Test Cases Section -->
+        <div id="testCasesSection">
+          <h5>Test Cases</h5>
+          <div class="test-case mb-3">
+            <label for="testCaseInput0" class="form-label">Input:</label>
+            <textarea class="form-control mb-2" id="testCaseInput0" name="testCases[0][input]" placeholder="Enter test case input" required></textarea>
+            <label for="testCaseOutput0" class="form-label">Output:</label>
+            <textarea class="form-control" id="testCaseOutput0" name="testCases[0][output]" placeholder="Enter test case output" required></textarea>
+          </div>
+        </div>
+        <!-- Button to Add More Test Cases -->
+        <button type="button" id="addTestCaseButton" class="btn btn-secondary mb-3">Add Another Test Case</button>
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-success">Add Question</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Section for choosing from the database -->
+    <div id="databaseSection" style="display: none;">
+      <!-- Filter by Name -->
+      <div class="mb-3">
+        <label for="filterName" class="form-label">Filter by Name</label>
+        <input type="text" class="form-control" id="filterName" placeholder="Enter question name">
+      </div>
+      <!-- Filter by Difficulty -->
+      <div class="mb-3">
+        <label for="filterDifficulty" class="form-label">Filter by Difficulty</label>
+        <select class="form-select" id="filterDifficulty">
+          <option value="">Select difficulty</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+      <!-- List of Questions -->
+      <div id="questionsList">
+        <h5>Available Questions</h5>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Question 1
+            <button class="btn btn-primary btn-sm addQuestionButton" data-id="1">Add</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const addNewQuestion = document.getElementById('addNewQuestion');
+    const chooseFromDatabase = document.getElementById('chooseFromDatabase');
+    const newQuestionSection = document.getElementById('newQuestionSection');
+    const databaseSection = document.getElementById('databaseSection');
+
+    addNewQuestion.addEventListener('change', () => {
+      newQuestionSection.style.display = 'block';
+      databaseSection.style.display = 'none';
+    });
+
+    chooseFromDatabase.addEventListener('change', () => {
+      newQuestionSection.style.display = 'none';
+      databaseSection.style.display = 'block';
+    });
+
+    document.getElementById('addTestCaseButton').addEventListener('click', function () {
+      const testCasesSection = document.getElementById('testCasesSection');
+      const testCaseCount = document.querySelectorAll('.test-case').length;
+      const newTestCase = document.createElement('div');
+      newTestCase.className = 'test-case mb-3';
+      newTestCase.innerHTML = `
+        <label for="testCaseInput${testCaseCount}" class="form-label">Input:</label>
+        <textarea class="form-control mb-2" id="testCaseInput${testCaseCount}" name="testCases[${testCaseCount}][input]" required></textarea>
+        <label for="testCaseOutput${testCaseCount}" class="form-label">Output:</label>
+        <textarea class="form-control" id="testCaseOutput${testCaseCount}" name="testCases[${testCaseCount}][output]" required></textarea>`;
+      testCasesSection.appendChild(newTestCase);
+    });
+  </script>
+</body>
+</html>

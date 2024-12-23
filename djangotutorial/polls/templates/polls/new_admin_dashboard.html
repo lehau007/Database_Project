@@ -2,7 +2,6 @@
 <html lang="en">
 
 {% load static %}
-
 <head>
   <style>
     /**
@@ -1249,16 +1248,16 @@ h6 {
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="{% static 'polls/img/favicon.png' %}" rel="icon">
-  <link href="{% static 'polls//img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+  <link href="{% static 'polls/img/favicon.pn' %}" rel="icon">
+  <link href="{% static 'polls/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="{% static 'polls//vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'polls//vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'polls/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
   <link href="{% static 'polls/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
   <link href="{% static 'polls/vendor/quill/quill.snow.css' %}" rel="stylesheet">
   <link href="{% static 'polls/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
@@ -1339,12 +1338,12 @@ h6 {
     </li><!-- End Dashboard Nav -->
 
     <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#Operations-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Operations</span><i class="bi bi-chevron-down ms-auto"></i>
+      <a class="nav-link collapsed" data-bs-target="#operations-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>operations</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <ul id="Operations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+      <ul id="operations-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="{% url 'admin_contest' %}">
+          <a href="view_contest.html">
             <i class="bi bi-circle"></i><span>View Contest</span>
           </a>
         </li>
@@ -1511,7 +1510,7 @@ h6 {
     <li class="nav-heading">Pages</li>
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="{% url 'profile' %}">
+      <a class="nav-link collapsed" href="users-profile.html">
         <i class="bi bi-person"></i>
         <span>Profile</span>
       </a>
@@ -1530,38 +1529,435 @@ h6 {
         <span>Contact</span>
       </a>
     </li><!-- End Contact Page Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="pages-register.html">
-        <i class="bi bi-card-list"></i>
-        <span>Register</span>
-      </a>
-    </li><!-- End Register Page Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="pages-login.html">
-        <i class="bi bi-box-arrow-in-right"></i>
-        <span>Login</span>
-      </a>
-    </li><!-- End Login Page Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="pages-error-404.html">
-        <i class="bi bi-dash-circle"></i>
-        <span>Error 404</span>
-      </a>
-    </li><!-- End Error 404 Page Nav -->
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="pages-blank.html">
-        <i class="bi bi-file-earmark"></i>
-        <span>Blank</span>
-      </a>
-    </li><!-- End Blank Page Nav -->
-
   </ul>
 
 </aside><!-- End Sidebar-->
+
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+          <div class="row">
+
+            <!-- Sales Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card sales-card">
+
+                <div class="card-body">
+                  <h5 class="card-title">Participants <span> | This month</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6>145</h6>
+                      <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Sales Card -->
+
+            <!-- Problems Solved Card -->
+            <div class="col-xxl-4 col-md-6">
+
+                <div class="card info-card problems-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Problems Solved <span>| This Month</span></h5>
+              
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #2196F3;"> <!-- Blue background -->
+                        <i class="bi bi-check-circle" style="color: #fff;"></i> <!-- White check-circle icon -->
+                      </div>
+                      <div class="ps-3">
+                        <h6>45</h6>
+                        <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              
+              </div>
+            <!-- End Problems Solved Card -->
+  
+            <div class="col-xxl-4 col-xl-12">
+
+                <div class="card info-card submissions-card">
+                  <div class="card-body">
+                    <h5 class="card-title">Submissions <span>| This Month</span></h5>
+              
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background-color: #FFD700;"> <!-- Gold background -->
+                        <i class="bi bi-upload" style="color: #fff;"></i> <!-- White upload icon -->
+                      </div>
+                      <div class="ps-3">
+                        <h6>1244</h6>
+                        <span class="text-success small pt-1 fw-bold">15%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              
+              </div>
+              <!-- End Total Submissions Card -->
+              
+              
+            <!-- Reports -->
+            <div class="col-12">
+                <div class="card">
+            
+                <div class="card-body">
+                    <h5 class="card-title">Contest Reports <span>/This Week</span></h5>
+            
+                    <!-- Line Chart -->
+                    <div id="reportsChart"></div>
+            
+                    <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        new ApexCharts(document.querySelector("#reportsChart"), {
+                        series: [{
+                            name: 'Submissions',
+                            data: [300, 225, 525, 725, 358, 1075, 900],
+                        }, {
+                            name: 'Correct Solutions',
+                            data: [180, 125, 225, 405, 245, 625, 400]
+                        }, {
+                            name: 'Failed Submissions',
+                            data: [120, 100, 200, 320, 123, 450, 500]
+                        }],
+                        chart: {
+                            height: 350,
+                            type: 'area',
+                            toolbar: {
+                            show: false
+                            },
+                        },
+                        markers: {
+                            size: 4
+                        },
+                        colors: ['#007bff', '#28a745', '#dc3545'], /* Blue, Green, Red */
+                        fill: {
+                            type: "gradient",
+                            gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.3,
+                            opacityTo: 0.4,
+                            stops: [0, 90, 100]
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            curve: 'smooth',
+                            width: 2
+                        },
+                        xaxis: {
+                            type: 'category',
+                            categories: [
+                            "2024-12-17", 
+                            "2024-12-18", 
+                            "2024-12-19", 
+                            "2024-12-20", 
+                            "2024-12-21", 
+                            "2024-12-22", 
+                            "2024-12-23"
+                            ]
+                        },
+                        tooltip: {
+                            x: {
+                            format: 'dd/MM/yy'
+                            },
+                        }
+                        }).render();
+                    });
+                    </script>
+                    <!-- End Line Chart -->
+            
+                </div>
+            
+                </div>
+            </div>
+            <!-- End Reports -->
+    
+            <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="card-body">
+                  <h5 class="card-title">Recent Applications <span>| Today</span></h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Id</th>
+                        <th scope="col">Student</th>
+                        <th scope="col">Contest</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row"><a href="#">#2457</a></th>
+                        <td>16</td>
+                        <td><a href="#" class="text-primary">lehau_noob</a></td>
+                        <td>Contest Round 16</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2146</a></th>
+                        <td>26</td>
+                        <td><a href="#" class="text-primary">Cong Minh noob</a></td>
+                        <td>Contest Round 12</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2145</a></th>
+                        <td>12</td>
+                        <td><a href="#" class="text-primary">Pham Hoang</a></td>
+                        <td>Contest Round 10</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2145</a></th>
+                        <td>11</td>
+                        <td><a href="#" class="text-primar">Hauoftoday</a></td>
+                        <td>Contest Round 9</td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2144</a></th>
+                        <td>10</td>
+                        <td><a href="#" class="text-primary">Munwind</a></td>
+                        <td>Contest Round 10</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+
+            <!-- Top Sovled question -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Top Solved Question <span>| Today</span></h5>
+
+                  <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Question</th>
+                        <th scope="col">Total submissions</th>
+                        <th scope="col">Accepted</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td><a href="#" class="text-primary fw-bold">Lehau_noob_top_1</a></td>
+                        <td>100</td>
+                        <td class="fw-bold">60</td>
+                      </tr>
+                      <tr>
+                        <td>5</td>
+                        <td><a href="#" class="text-primary fw-bold">Lehau_noob_top2</a></td>
+                        <td>70</td>
+                        <td class="fw-bold">55</td>
+                      </tr>
+                      <tr>
+                        <td>7</td>
+                        <td><a href="#" class="text-primary fw-bold">Lehau_noob_top3</a></td>
+                        <td>75</td>
+                        <td class="fw-bold">51</td>
+                      </tr>
+                      <tr>
+                        <td>6</td>
+                        <td><a href="#" class="text-primary fw-bold">Lehau_noob_top4</a></td>
+                        <td>110</td>
+                        <td class="fw-bold">46</td>
+                      </tr>
+                      <tr>
+                        <td>2</td>
+                        <td><a href="#" class="text-primary fw-bold">Lehau_noob_top5</a></td>
+                        <td>80</td>
+                        <td class="fw-bold">45</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Top Selling -->
+
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+            <!-- Recent Activity -->
+            <div class="card">
+              
+  
+              <div class="card-body">
+                <h5 class="card-title">Recent Activity <span>| Today</span></h5>
+  
+                <div class="activity">
+  
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">32 min</div>
+                    <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                    <div class="activity-content">
+                      <a href="#" class="fw-bold text-dark">Professor Lehau </a> has created a new contest
+                    </div>
+                  </div><!-- End activity item-->
+  
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">56 min</div>
+                    <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+                    <div class="activity-content">
+                        <a href="#" class="fw-bold text-dark">Professor Munwind </a> has created a new contest
+                    </div>
+                  </div><!-- End activity item-->
+  
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">2 hrs</div>
+                    <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                    <div class="activity-content">
+                        <a href="#" class="fw-bold text-dark">Professor Cong Minh </a> has created a new contest
+                    </div>
+                  </div><!-- End activity item-->
+  
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">1 day</div>
+                    <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+                    <div class="activity-content">
+                        <a href="#" class="fw-bold text-dark">Professor Lehau_noob1 </a> has created a new contest
+                    </div>
+                  </div><!-- End activity item-->
+  
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">2 days</div>
+                    <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+                    <div class="activity-content">
+                        <a href="#" class="fw-bold text-dark">Professor Lehau_noob2 </a> has created a new contest
+                    </div>
+                  </div><!-- End activity item-->
+  
+                  <div class="activity-item d-flex">
+                    <div class="activite-label">4 weeks</div>
+                    <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
+                    <div class="activity-content">
+                        <a href="#" class="fw-bold text-dark">Professor Lehau_noob2 </a> has created a new contest
+                    </div>
+                  </div><!-- End activity item-->
+  
+                </div>
+  
+              </div>
+            </div><!-- End Recent Activity -->
+
+          <!-- Website Traffic -->
+          <div class="card">
+
+            <div class="card-body pb-0">
+              <h5 class="card-title">Problems</h5>
+
+              <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  echarts.init(document.querySelector("#trafficChart")).setOption({
+                    tooltip: {
+                      trigger: 'item'
+                    },
+                    legend: {
+                      top: '5%',
+                      left: 'center'
+                    },
+                    series: [{
+                      name: 'Access From',
+                      type: 'pie',
+                      radius: ['40%', '70%'],
+                      avoidLabelOverlap: false,
+                      label: {
+                        show: false,
+                        position: 'center'
+                      },
+                      emphasis: {
+                        label: {
+                          show: true,
+                          fontSize: '18',
+                          fontWeight: 'bold'
+                        }
+                      },
+                      labelLine: {
+                        show: false
+                      },
+                      data: [
+                        {
+                          value: 1048,
+                          name: 'Easy',
+                          itemStyle: {
+                            color: '#28a745' // Green for Easy
+                          }
+                        },
+                        {
+                          value: 735,
+                          name: 'Medium',
+                          itemStyle: {
+                            color: '#ffc107' // Yellow for Medium
+                          }
+                        },
+                        {
+                          value: 580,
+                          name: 'Hard',
+                          itemStyle: {
+                            color: '#dc3545' // Red for Hard
+                          }
+                        },
+                      ]
+                    }]
+                  });
+                });
+              </script>
+              
+            </div>
+          </div><!-- End Website Traffic -->
+
+          
+        </div><!-- End Right side columns -->
+
+      </div>
+    </section>
+
+  </main><!-- End #main -->
 
   <!-- Vendor JS Files -->
   <script src="{% static 'polls/vendor/apexcharts/apexcharts.min.js' %}"></script>

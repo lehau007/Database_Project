@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa; /* Light gray background */
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .question-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    .code-area {
+      width: 100%;
+      height: 200px;
+      font-family: monospace;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    .btn-submit {
+      margin-top: 20px;
+    }
+
+    .submission-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #e9ecef;
+      margin-top: 20px;
+    }
+
+    .submission-card h5 {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Question Card -->
+    <div class="question-card">
+        <h3 class="mb-3">Question Title: {{ question.name }}</h3>
+        <p>{{ question.description }}</p>
+    </div>
+
+    <!-- Submit Code Section -->
+    <div class="mt-4">
+      <h4>Submit Your Code</h4>
+      <form method="POST" action="{% url 'question_details' question_id=question.id %}">
+        {% csrf_token %}
+        <textarea 
+          name="code" 
+          class="code-area" 
+          placeholder="Write your code here..." 
+          required></textarea>
+        <select name="language_id" class="form-select mt-2" required>
+          <option value="54">C++</option>
+          <option value="71">Python</option>
+          <option value="62">Java</option>
+          <!-- Add other language options as needed -->
+        </select>
+        <button type="submit" class="btn btn-primary mt-3">Submit Code</button>
+      </form>
+    </div>    
+
+    <!-- Submission History Section -->
+    <div class="mt-4">
+      <h4>Submission History</h4>
+      {% for submission in submissions %}
+      <div class="submission-card">
+          <p><strong>Submitted At:</strong> {{ submission.time }}</p>
+          <p><strong>Points:</strong> {{ submission.point }}</p>
+          <p><strong>Status:</strong> {{ submission.status }}</p>
+          <p><strong>Code:</strong> {{ submission.code }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
