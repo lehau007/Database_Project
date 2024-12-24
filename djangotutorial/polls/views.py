@@ -25,7 +25,7 @@ from django.http import JsonResponse
 
 # Global variables 
 isLogin = True
-isAdmin = True
+isAdmin = False
 
 student_id = 1
 current_contest = -1
@@ -209,6 +209,62 @@ def student_question_view(request):
     # Handle contest_data and render to a template
     return render(request, 'polls/question_in_contest_student.html', {'question': question})
 
+import http.client
+import json
+import time
+import base64
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.db import connection
+
+# Constants
+RAPIDAPI_HOST = "judge029.p.rapidapi.com"
+RAPIDAPI_KEY = "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d11"
+
+# Helper function to submit code to Judge0
+def submit_code_to_judge0(code, language_id, stdin):
+    conn = http.client.HTTPSConnection(RAPIDAPI_HOST)
+    headers = {
+        'x-rapidapi-key': RAPIDAPI_KEY,
+        'x-rapidapi-host': RAPIDAPI_HOST,
+        'Content-Type': 'application/json'
+    }
+
+    # Encode payload in Base64
+    payload = json.dumps({
+        "source_code": base64.b64encode(code.encode()).decode(),
+        "language_id": language_id,
+        "stdin": base64.b64encode(stdin.encode()).decode(),
+    })
+
+    try:
+        conn.request("POST", "/submissions?base64_encoded=true&wait=false", body=payload, headers=headers)
+        res = conn.getresponse()
+        data = res.read()
+        response_json = json.loads(data.decode("utf-8"))
+        return response_json.get('token', None)
+    except Exception as e:
+        print(f"Error submitting code: {e}")
+        return None
+
+# Helper function to get result from Judge0 using the token
+def get_result_from_judge0(token):
+    conn = http.client.HTTPSConnection(RAPIDAPI_HOST)
+    headers = {
+        'x-rapidapi-key': RAPIDAPI_KEY,
+        'x-rapidapi-host': RAPIDAPI_HOST
+    }
+
+    try:
+        conn.request("GET", f"/submissions/{token}?base64_encoded=true", headers=headers)
+        res = conn.getresponse()
+        data = res.read()
+        return json.loads(data.decode("utf-8"))
+    except Exception as e:
+        print(f"Error fetching result: {e}")
+        return None
+
+# Main view to display a question
 def display_question(request, question_id):
     global student_id, isAdmin, isLogin, current_contest
     if not isLogin:
@@ -217,13 +273,9 @@ def display_question(request, question_id):
     if isAdmin:
         return render(request, 'polls/protect_student_page.html')
     
-    global student_id, current_contest
-
     if request.method == 'POST':
         code = request.POST.get('code', '')
         language_id = int(request.POST.get('language_id', 54))  # Default to C++
-        
-        # Fetch test cases using raw SQL
         testcases_query = "SELECT input, output, test_point FROM test_case WHERE question_id = %s"
         testcases = execute_raw_sql(testcases_query, [question_id])
 
@@ -231,70 +283,81 @@ def display_question(request, question_id):
             return JsonResponse({'error': 'No test cases found for this question'}, status=404)
 
         results = []
-
-        # Loop through test cases to submit code and check results
         for testcase in testcases:
             token = submit_code_to_judge0(code, language_id, testcase[0])
             if token:
-                while True:
+                retries = 0
+                max_retries = 10
+                while retries < max_retries:
                     result = get_result_from_judge0(token)
                     if result and result.get('status', {}).get('id') == 3:  # Status 3 means completed
-                        actual_output = result.get('stdout', '').strip()
+                        actual_output = base64.b64decode(result.get('stdout', '')).decode().strip()
                         expected_output = testcase[1].strip()
-                        print("hau1", actual_output)
                         status = 'Correct' if actual_output == expected_output else 'Wrong'
+                        print('right')
                         results.append({
                             'input': testcase[0],
                             'expected': expected_output,
                             'actual': actual_output,
-                            'point': testcase[2],
+                            'point': testcase[2] if status == 'Correct' else 0,
                             'status': status,
                         })
                         break
                     elif result and result.get('status', {}).get('id') in [4, 5]:  # Error or timeout
-                        results.append({'input': testcase[0], 'error': 'Execution error or timeout', 'point': 0})
+                        error_message = base64.b64decode(result.get('stderr', 'Unknown error')).decode()
+                        print(error_message)
+                        results.append({'input': testcase[0], 'error': error_message, 'point': 0})
                         break
-                    time.sleep(2)  # Poll every 2 seconds
+                    retries += 1
+                    time.sleep(2)
 
-        # Determine overall status
+        # Calculate total points and status
         correct_count = sum(1 for result in results if result.get('status') == 'Correct')
-        points = 0
-        for result in results:
-            points += results.get('point')
-
+        points = sum(result.get('point', 0) for result in results)
         if correct_count == len(testcases):
             status = 'Accepted'
         elif correct_count > 0:
             status = 'Partial'
         else:
             status = 'Failed'
-        
-        print(status, points)
-        query = "INSERT INTO submission (student_id, question_id, contest_id, evaluation_point, status) VALUES (%s, %s, %s, %s, %s)"
+
+        query = """
+            INSERT INTO submission (student_id, question_id, contest_id, evaluation_point, status)
+            VALUES (%s, %s, %s, %s, %s)
+        """
         if current_contest != -1:
             execute_raw_sql(query, [student_id, question_id, current_contest, points, status])
     
-    query = "SELECT q.question_id, q.title, q.description FROM question as q where q.question_id = %s"
+    # Fetch question details
+    query = "SELECT q.question_id, q.title, q.description FROM question as q WHERE q.question_id = %s"
     with connection.cursor() as cursor:
-        cursor.execute(query, (question_id, ))
-        datas = cursor.fetchall()  # Fetch contest details
-        
-    questions = [{"id": data[0], "name": data[1], "description": data[2]} for data in datas]
+        cursor.execute(query, (question_id,))
+        datas = cursor.fetchall()
+    questions = [{"id": data[0], "name": data[1], "description": convert_special_chars_to_html(data[2])} for data in datas]
     questions = questions[0]
 
-    query = "Select s.* from submission as s where s.question_id = %s and s.student_id = %s and s.contest_id = %s"
+    # Fetch past submissions
+    query = """
+        SELECT s.* FROM submission AS s 
+        WHERE s.question_id = %s AND s.student_id = %s AND s.contest_id = %s
+    """
     with connection.cursor() as cursor:
-        cursor.execute(query, (question_id, student_id, current_contest, ))
+        cursor.execute(query, (question_id, student_id, current_contest))
         data = cursor.fetchall()
-        
     submissions = [{"code": row[0], "time": row[4], "point": row[5], "status": row[6]} for row in data]
-    # Handle contest_data and render to a template
 
-    # Render the question with the code editor template
     return render(request, 'polls/display_question_form.html', {
         'question': questions,
         'submissions': submissions
     })
+
+# Helper function to execute raw SQL queries
+def execute_raw_sql(query, params):
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        if query.strip().lower().startswith("select"):
+            return cursor.fetchall()
+        connection.commit()
 
 """___________________________________________________________________________________"""
 
@@ -479,9 +542,25 @@ def questions_view(request):
         contest_data = cursor.fetchall()  # Fetch contest details
         
     question = [{"id": row[0], "name": row[1]} for row in contest_data]
+    n = len(question)
+    query = "SELECT s.submission_id, s.evaluation_point, s.status, s.student_id, s.question_id FROM submission AS s WHERE s.contest_id = %s"
+    with connection.cursor() as cursor:
+        cursor.execute(query, (info, ))
+        contest_data = cursor.fetchall()  # Fetch contest details
+        
+    submissions = []; i = 0
+    for row in contest_data:
+        if i == n:
+            break
+        i += 1
+        status = False
+        if row[2] == 'Accepted':
+            status = True
+        
+        submissions.append({'id': row[0], 'point': row[1], 'isaccepted': status, 'student_id': row[3], 'question_id': row[4]})
 
     # Handle contest_data and render to a template
-    return render(request, 'polls/question_in_contest.html', {'question': question})
+    return render(request, 'polls/question_in_contest.html', {'question': question, 'submissions': submissions})
 
 def add_contest(request):
     global isLogin, isAdmin, current_contest
@@ -726,7 +805,7 @@ import json
 import time
 
 RAPIDAPI_HOST = "judge029.p.rapidapi.com"
-RAPIDAPI_KEY = "e7238605d0mshf1055b263943c90p1dd460jsnc7a3d80e9ff9"  # Replace with your RapidAPI key
+RAPIDAPI_KEY = "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d11"  # Replace with your RapidAPI key
 
 # Helper function to execute raw SQL
 def execute_raw_sql(query, params=None):
@@ -772,75 +851,16 @@ def get_result_from_judge0(token):
 
     return json.loads(data.decode("utf-8"))
 
-# Main view to handle question submission and code execution
-def question_with_editor(request, question_id):
-    # Fetch question details using raw SQL
-    question_query = "SELECT * FROM questions WHERE question_id = %s"
-    question = execute_raw_sql(question_query, [question_id])
+from django.utils.html import escape
+def convert_special_chars_to_html(text):
+    # Replace special characters with HTML entities
+    text = escape(text).replace("&", "&amp;")
+    text = escape(text).replace("<", "&lt;")
+    text = escape(text).replace(">", "&gt;")
+    text = escape(text).replace('"', "&quot;")
+    text = escape(text).replace("'", "&#39;")
+    # Replace \n with <br> for line breaks
+    text = escape(text).replace("\\n", "<br>")
+    return text
 
-    if not question:
-        return JsonResponse({'error': 'Question not found'}, status=404)
-
-    question = question[0]  # Assuming `question_id` is unique
-    description_lines = question[2].splitlines()  # Adjust index as per your database schema
-    input_lines = question[3].splitlines()
-    output_lines = question[4].splitlines()
-    constraints_lines = question[5].splitlines()
-    example_lines = question[6].splitlines()
-
-    if request.method == 'POST':
-        code = request.POST.get('code', '')
-        language_id = int(request.POST.get('language_id', 54))  # Default to C++
-        
-        # Fetch test cases using raw SQL
-        testcases_query = "SELECT input, output FROM testcases WHERE question_id = %s"
-        testcases = execute_raw_sql(testcases_query, [question_id])
-
-        if not testcases:
-            return JsonResponse({'error': 'No test cases found for this question'}, status=404)
-
-        results = []
-
-        # Loop through test cases to submit code and check results
-        for testcase in testcases:
-            token = submit_code_to_judge0(code, language_id, testcase[0])
-            if token:
-                while True:
-                    result = get_result_from_judge0(token)
-                    if result and result.get('status', {}).get('id') == 3:  # Status 3 means completed
-                        actual_output = result.get('stdout', '').strip()
-                        expected_output = testcase[1].strip()
-                        status = 'Correct' if actual_output == expected_output else 'Wrong'
-                        results.append({
-                            'input': testcase[0],
-                            'expected': expected_output,
-                            'actual': actual_output,
-                            'status': status,
-                        })
-                        break
-                    elif result and result.get('status', {}).get('id') in [4, 5]:  # Error or timeout
-                        results.append({'input': testcase[0], 'error': 'Execution error or timeout'})
-                        break
-                    time.sleep(2)  # Poll every 2 seconds
-
-        # Determine overall status
-        correct_count = sum(1 for result in results if result.get('status') == 'Correct')
-        if correct_count == len(testcases):
-            status = 'Accepted'
-        elif correct_count > 0:
-            status = 'Partial'
-        else:
-            status = 'Failed'
-
-        return JsonResponse({'results': results, 'status': status})
-
-    # Render the question with the code editor template
-    return render(request, 'problem/question_editor.html', {
-        'question': question,
-        'description_lines': description_lines,
-        'input_lines': input_lines,
-        'output_lines': output_lines,
-        'constraints_lines': constraints_lines,
-        'example_lines': example_lines,
-    })
 

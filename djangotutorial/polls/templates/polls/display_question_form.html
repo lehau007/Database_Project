@@ -58,8 +58,8 @@
   <div class="container">
     <!-- Question Card -->
     <div class="question-card">
-        <h3 class="mb-3">Question Title: {{ question.name }}</h3>
-        <p>{{ question.description }}</p>
+        <h3 class="mb-3">Question Title: {{ question.name | safe }}</h3>
+        <p>{{ question.description | safe }}</p>
     </div>
 
     <!-- Submit Code Section -->

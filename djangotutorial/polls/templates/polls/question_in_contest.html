@@ -101,6 +101,16 @@
     .alert {
       margin-bottom: 10px;
     }
+
+    .alert-light-green {
+    background-color: #90ee90;
+    color: black;
+}
+
+.alert-light-red {
+    background-color: #f08080;
+    color: black;
+}
   </style>
 </head>
 
@@ -129,21 +139,15 @@
   
       <!-- Card 2 on the right -->
       <div class="col-lg-6">
-        <a href="submission_in_contest.html" target="_blank" style="text-decoration: none; color: inherit;">
+        <a href="{% url 'question' %}" target="_blank" style="text-decoration: none; color: inherit;">
           <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Submission</h5>
-              
-              <div class="alert alert-success alert-dismissible fade show" role="alert">
-                This is for accept submission
-              </div>
-              <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                This is for the failed submission
-              </div>
-              <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                This is for the partial submission
-              </div>
-              
+              <div class="card-body">
+                <h5 class="card-title">Submissions</h5>
+                {% for s in submissions %}
+                    <div class="alert alert-dismissible fade show {% if s.isaccepted %}alert-light-green{% else %}alert-light-red{% endif %}" role="alert">
+                        Id: {{ s.id }} | Point: {{ s.point }} | Student Id: {{ s.student_id }} | Question Id: {{ s.question_id }}
+                    </div>
+                {% endfor %}
             </div>
           </div>
         </a>
