@@ -209,62 +209,62 @@ def student_question_view(request):
     # Handle contest_data and render to a template
     return render(request, 'polls/question_in_contest_student.html', {'question': question})
 
-import http.client
-import json
 import time
-import base64
+import json
+import http.client
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.db import connection
 
-# Constants
 RAPIDAPI_HOST = "judge029.p.rapidapi.com"
-RAPIDAPI_KEY = "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d11"
+RAPIDAPI_KEY = "e7238605d0mshf1055b263943c90p1dd460jsnc7a3d80e9ff9" 
 
-# Helper function to submit code to Judge0
 def submit_code_to_judge0(code, language_id, stdin):
-    conn = http.client.HTTPSConnection(RAPIDAPI_HOST)
+    print(1)
+    conn = http.client.HTTPSConnection("judge029.p.rapidapi.com")
+    print(2)
     headers = {
-        'x-rapidapi-key': RAPIDAPI_KEY,
-        'x-rapidapi-host': RAPIDAPI_HOST,
-        'Content-Type': 'application/json'
+        'x-rapidapi-key': "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d111",
+        'x-rapidapi-host': "judge029.p.rapidapi.com",
+        'Content-Type': "application/json"
     }
 
-    # Encode payload in Base64
     payload = json.dumps({
-        "source_code": base64.b64encode(code.encode()).decode(),
+        "source_code": code,
         "language_id": language_id,
-        "stdin": base64.b64encode(stdin.encode()).decode(),
+        "stdin": stdin
     })
 
-    try:
-        conn.request("POST", "/submissions?base64_encoded=true&wait=false", body=payload, headers=headers)
-        res = conn.getresponse()
-        data = res.read()
-        response_json = json.loads(data.decode("utf-8"))
-        return response_json.get('token', None)
-    except Exception as e:
-        print(f"Error submitting code: {e}")
-        return None
+    conn.request("POST", "/submissions?base64_encoded=true&wait=false&fields=*", payload, headers)
+    res = conn.getresponse()
+    data = res.read()
 
-# Helper function to get result from Judge0 using the token
+    response_json = json.loads(data.decode("utf-8"))
+    print("Submit Code Response:", response_json)  # Add print here
+
+    if "token" in response_json:
+        print("true")
+        return response_json['token']
+
+    print("false")
+    return None
+
 def get_result_from_judge0(token):
-    conn = http.client.HTTPSConnection(RAPIDAPI_HOST)
+    conn = http.client.HTTPSConnection("judge029.p.rapidapi.com")
+    print(3)
     headers = {
-        'x-rapidapi-key': RAPIDAPI_KEY,
-        'x-rapidapi-host': RAPIDAPI_HOST
+        'x-rapidapi-key': "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d111",
+        'x-rapidapi-host': "judge029.p.rapidapi.com",
+        'Content-Type': "application/json"
     }
 
-    try:
-        conn.request("GET", f"/submissions/{token}?base64_encoded=true", headers=headers)
-        res = conn.getresponse()
-        data = res.read()
-        return json.loads(data.decode("utf-8"))
-    except Exception as e:
-        print(f"Error fetching result: {e}")
-        return None
+    conn.request("GET", f"/submissions/{token}", headers=headers)
 
-# Main view to display a question
+    res = conn.getresponse()
+    data = res.read()
+
+    response_json = json.loads(data.decode("utf-8"))
+    return response_json
+
 def display_question(request, question_id):
     global student_id, isAdmin, isLogin, current_contest
     if not isLogin:
@@ -272,10 +272,11 @@ def display_question(request, question_id):
     
     if isAdmin:
         return render(request, 'polls/protect_student_page.html')
-    
+
     if request.method == 'POST':
         code = request.POST.get('code', '')
         language_id = int(request.POST.get('language_id', 54))  # Default to C++
+        language_id = 54
         testcases_query = "SELECT input, output, test_point FROM test_case WHERE question_id = %s"
         testcases = execute_raw_sql(testcases_query, [question_id])
 
@@ -283,18 +284,20 @@ def display_question(request, question_id):
             return JsonResponse({'error': 'No test cases found for this question'}, status=404)
 
         results = []
+
         for testcase in testcases:
             token = submit_code_to_judge0(code, language_id, testcase[0])
+            print(token)
             if token:
                 retries = 0
                 max_retries = 10
                 while retries < max_retries:
                     result = get_result_from_judge0(token)
                     if result and result.get('status', {}).get('id') == 3:  # Status 3 means completed
-                        actual_output = base64.b64decode(result.get('stdout', '')).decode().strip()
+                        actual_output = result.get('stdout', '').strip()
                         expected_output = testcase[1].strip()
                         status = 'Correct' if actual_output == expected_output else 'Wrong'
-                        print('right')
+                        print('actual_output', actual_output, ' - expected', expected_output)
                         results.append({
                             'input': testcase[0],
                             'expected': expected_output,
@@ -304,48 +307,45 @@ def display_question(request, question_id):
                         })
                         break
                     elif result and result.get('status', {}).get('id') in [4, 5]:  # Error or timeout
-                        error_message = base64.b64decode(result.get('stderr', 'Unknown error')).decode()
+                        error_message = result.get('stderr', 'Unknown error')
                         print(error_message)
                         results.append({'input': testcase[0], 'error': error_message, 'point': 0})
                         break
                     retries += 1
                     time.sleep(2)
 
-        # Calculate total points and status
         correct_count = sum(1 for result in results if result.get('status') == 'Correct')
-        points = sum(result.get('point', 0) for result in results)
+        points = 0
+        for result in results:
+            points += result.get('point', 0)
+
         if correct_count == len(testcases):
             status = 'Accepted'
         elif correct_count > 0:
             status = 'Partial'
         else:
             status = 'Failed'
-
-        query = """
-            INSERT INTO submission (student_id, question_id, contest_id, evaluation_point, status)
-            VALUES (%s, %s, %s, %s, %s)
-        """
+        
+        print(status, points)
+        query = "INSERT INTO submission (student_id, question_id, contest_id, evaluation_point, status) VALUES (%s, %s, %s, %s, %s)"
         if current_contest != -1:
             execute_raw_sql(query, [student_id, question_id, current_contest, points, status])
     
-    # Fetch question details
-    query = "SELECT q.question_id, q.title, q.description FROM question as q WHERE q.question_id = %s"
+    query = "SELECT q.question_id, q.title, q.description FROM question as q where q.question_id = %s"
     with connection.cursor() as cursor:
         cursor.execute(query, (question_id,))
         datas = cursor.fetchall()
+        
     questions = [{"id": data[0], "name": data[1], "description": convert_special_chars_to_html(data[2])} for data in datas]
     questions = questions[0]
 
-    # Fetch past submissions
-    query = """
-        SELECT s.* FROM submission AS s 
-        WHERE s.question_id = %s AND s.student_id = %s AND s.contest_id = %s
-    """
+    query = "SELECT s.* FROM submission as s WHERE s.question_id = %s AND s.student_id = %s AND s.contest_id = %s"
     with connection.cursor() as cursor:
         cursor.execute(query, (question_id, student_id, current_contest))
         data = cursor.fetchall()
+        
     submissions = [{"code": row[0], "time": row[4], "point": row[5], "status": row[6]} for row in data]
-
+    submissions.reverse()
     return render(request, 'polls/display_question_form.html', {
         'question': questions,
         'submissions': submissions
@@ -355,9 +355,7 @@ def display_question(request, question_id):
 def execute_raw_sql(query, params):
     with connection.cursor() as cursor:
         cursor.execute(query, params)
-        if query.strip().lower().startswith("select"):
-            return cursor.fetchall()
-        connection.commit()
+        return cursor.fetchall()
 
 """___________________________________________________________________________________"""
 
@@ -797,16 +795,6 @@ def see_participants(request):
 
 """____________________________________TEST_________________________________________________"""
 
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
-from django.db import connection
-import http.client
-import json
-import time
-
-RAPIDAPI_HOST = "judge029.p.rapidapi.com"
-RAPIDAPI_KEY = "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d11"  # Replace with your RapidAPI key
-
 # Helper function to execute raw SQL
 def execute_raw_sql(query, params=None):
     with connection.cursor() as cursor:
@@ -814,42 +802,6 @@ def execute_raw_sql(query, params=None):
         if query.strip().lower().startswith("select"):
             return cursor.fetchall()
         return None
-
-# Helper function to submit code to Judge0 via http.client
-def submit_code_to_judge0(code, language_id, stdin):
-    conn = http.client.HTTPSConnection(RAPIDAPI_HOST)
-    headers = {
-        'x-rapidapi-key': RAPIDAPI_KEY,
-        'x-rapidapi-host': RAPIDAPI_HOST,
-        'Content-Type': 'application/json'
-    }
-
-    payload = json.dumps({
-        "source_code": code,
-        "language_id": language_id,
-        "stdin": stdin
-    })
-
-    conn.request("POST", "/submissions", body=payload, headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-
-    response_json = json.loads(data.decode("utf-8"))
-    return response_json.get('token', None)
-
-# Helper function to get result from Judge0 using the token
-def get_result_from_judge0(token):
-    conn = http.client.HTTPSConnection(RAPIDAPI_HOST)
-    headers = {
-        'x-rapidapi-key': RAPIDAPI_KEY,
-        'x-rapidapi-host': RAPIDAPI_HOST
-    }
-
-    conn.request("GET", f"/submissions/{token}", headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-
-    return json.loads(data.decode("utf-8"))
 
 from django.utils.html import escape
 def convert_special_chars_to_html(text):

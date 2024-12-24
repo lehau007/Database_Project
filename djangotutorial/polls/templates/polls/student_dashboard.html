@@ -1282,7 +1282,7 @@ h6 {
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{% url 'student_dashboard' %}" class="logo d-flex align-items-center">
         <img src="{% static 'polls/img/logo_2.png' %}" alt="">
         <span class="d-none d-lg-block">Hustack</span>
       </a>
@@ -1374,7 +1374,7 @@ h6 {
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}">Home</a></li>
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
       </nav>
