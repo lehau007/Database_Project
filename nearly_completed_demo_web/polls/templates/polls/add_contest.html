@@ -83,7 +83,6 @@
     .alert {
       display: none;
     }
-
   </style>
 </head>
 
@@ -95,10 +94,12 @@
         <i class="bi bi-trophy"></i> Add Contest
       </div>
       <div class="card-body">
-        <form id="contestForm">
+        <!-- Add a proper form action and method -->
+        <form id="contestForm" method="POST" action="{% url 'add_contest' %}">
+          {% csrf_token %}
           <div class="mb-3">
             <label for="contestName" class="form-label">Contest Name</label>
-            <input type="text" class="form-control" id="contestName" placeholder="Enter contest name" required>
+            <input type="text" class="form-control" name="contest_name" id="contestName" placeholder="Enter contest name" required>
           </div>
           <button type="submit" class="btn btn-success">Add Contest</button>
         </form>
@@ -111,15 +112,28 @@
   </div>
 
   <script>
+    // Optionally handle form submission via JavaScript if not required to redirect
     document.getElementById('contestForm').addEventListener('submit', function(event) {
-      event.preventDefault(); // Prevent the form from refreshing the page
-      document.getElementById('successMessage').style.display = 'block';
-      setTimeout(function() {
-        document.getElementById('successMessage').style.display = 'none';
-      }, 3000); // Hide the success message after 3 seconds
+      event.preventDefault(); // Prevent default submission
+      const form = this;
+      fetch(form.action, {
+        method: form.method,
+        body: new FormData(form),
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('successMessage').style.display = 'block';
+          setTimeout(function() {
+            document.getElementById('successMessage').style.display = 'none';
+          }, 3000);
+        }
+      });
     });
   </script>
 
 </body>
-
 </html>

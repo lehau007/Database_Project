@@ -100,8 +100,8 @@
                   <td>{{participant.name}}</td>
                   <td>
                     <div class="btn-group">
-                      <button class="btn btn-success accept-btn" data-action="accept" data-id="123">Accept</button>
-                      <button class="btn btn-danger reject-btn" data-action="reject" data-id="123">Reject</button>
+                      <button class="btn btn-success accept-btn" data-action="accept" data-id="{{ participant.id }}">Accept</button>
+                      <button class="btn btn-danger reject-btn" data-action="reject" data-id="{{ participant.id }}">Reject</button>
                     </div>
                     <script>
                       document.querySelectorAll('.btn-group button').forEach(button => {

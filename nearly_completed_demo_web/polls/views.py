@@ -24,12 +24,12 @@ from django.db import connection
 from django.http import JsonResponse
 
 # Global variables 
-isLogin = True
+isLogin = False
 isAdmin = False
 
-student_id = 1
+student_id = -1
 current_contest = -1
-admin_id = 1
+admin_id = -1
 
 """---------------------------------------STUDENT BLOCK-----------------------------------------"""
 def join_contest(request):
@@ -45,6 +45,8 @@ def join_contest(request):
         data = json.loads(request.body)
         action = data.get('action')
         contest_id = data.get('id')
+
+        print(contest_id, action)
         
         if action == "accept":
             query = """
@@ -175,6 +177,13 @@ def student_view_contest(request):
         return render(request, 'polls/protect_student_page.html')
 
     global student_id
+    
+    query = "SELECT (s.first_name || ' ' || s.last_name) as name from student as s where s.student_id = %s"
+    with connection.cursor() as cursor:
+        cursor.execute(query, (student_id, ))
+        name = cursor.fetchone()  # Fetch all contest rows
+    
+    name = name[0]
 
     query = "SELECT c.contest_id, c.name FROM contest AS c JOIN participants AS p USING (contest_id) WHERE p.student_id = %s"
     with connection.cursor() as cursor:
@@ -185,7 +194,7 @@ def student_view_contest(request):
     contest_list = [{"id": row[0], "name": row[1]} for row in contests]
 
     # Pass data to template
-    return render(request, 'polls/view_contest_student.html', {'contests': contest_list})
+    return render(request, 'polls/view_contest_student.html', {'contests': contest_list, 'name': name})
 
 def student_question_view(request):
     if not isLogin:
@@ -216,17 +225,18 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 RAPIDAPI_HOST = "judge029.p.rapidapi.com"
-RAPIDAPI_KEY = "e7238605d0mshf1055b263943c90p1dd460jsnc7a3d80e9ff9" 
+RAPIDAPI_KEY = "e7238605d0mshf1055b263943c90p1dd460jsnc7a3d80e9ff9"  # Replace with your RapidAPI key
 
 def submit_code_to_judge0(code, language_id, stdin):
     print(1)
     conn = http.client.HTTPSConnection("judge029.p.rapidapi.com")
     print(2)
     headers = {
-        'x-rapidapi-key': "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d111",
+        'x-rapidapi-key': RAPIDAPI_KEY,
         'x-rapidapi-host': "judge029.p.rapidapi.com",
         'Content-Type': "application/json"
     }
+
 
     payload = json.dumps({
         "source_code": code,
@@ -234,7 +244,7 @@ def submit_code_to_judge0(code, language_id, stdin):
         "stdin": stdin
     })
 
-    conn.request("POST", "/submissions?base64_encoded=true&wait=false&fields=*", payload, headers)
+    conn.request("POST", "/submissions", body=payload, headers=headers)
     res = conn.getresponse()
     data = res.read()
 
@@ -242,17 +252,15 @@ def submit_code_to_judge0(code, language_id, stdin):
     print("Submit Code Response:", response_json)  # Add print here
 
     if "token" in response_json:
-        print("true")
         return response_json['token']
 
-    print("false")
     return None
 
 def get_result_from_judge0(token):
     conn = http.client.HTTPSConnection("judge029.p.rapidapi.com")
-    print(3)
+    print("Running")
     headers = {
-        'x-rapidapi-key': "7486df52bamshaa11b3a964e865cp10940djsn0a06e181d111",
+        'x-rapidapi-key': RAPIDAPI_KEY,
         'x-rapidapi-host': "judge029.p.rapidapi.com",
         'Content-Type': "application/json"
     }
@@ -265,6 +273,14 @@ def get_result_from_judge0(token):
     response_json = json.loads(data.decode("utf-8"))
     return response_json
 
+# Helper function to execute raw SQL
+def execute_raw_sql(query, params=None):
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        if query.strip().lower().startswith("select"):
+            return cursor.fetchall()
+        return None
+
 def display_question(request, question_id):
     global student_id, isAdmin, isLogin, current_contest
     if not isLogin:
@@ -275,10 +291,26 @@ def display_question(request, question_id):
 
     if request.method == 'POST':
         code = request.POST.get('code', '')
+        print(code)
         language_id = int(request.POST.get('language_id', 54))  # Default to C++
-        language_id = 54
-        testcases_query = "SELECT input, output, test_point FROM test_case WHERE question_id = %s"
+        
+        testcases_query = "SELECT input, output, test_id FROM test_case WHERE question_id = %s"
         testcases = execute_raw_sql(testcases_query, [question_id])
+
+        print(testcases)
+        
+        query = "INSERT INTO submission (student_id, question_id, contest_id) VALUES (%s, %s, %s)"
+        if current_contest != -1:
+            with connection.cursor() as cursor:
+                cursor.execute(query, [student_id, question_id, current_contest])
+                
+        query = "select submission_id from submission order by (created_at) desc limit 1"
+        submission_id = -1
+        if current_contest != -1:
+            with connection.cursor() as cursor:
+                cursor.execute(query, [student_id, question_id, current_contest])
+                submission_id = cursor.fetchone()
+        submission_id = submission_id[0]
 
         if not testcases:
             return JsonResponse({'error': 'No test cases found for this question'}, status=404)
@@ -287,11 +319,10 @@ def display_question(request, question_id):
 
         for testcase in testcases:
             token = submit_code_to_judge0(code, language_id, testcase[0])
-            print(token)
+            
             if token:
                 retries = 0
-                max_retries = 10
-                while retries < max_retries:
+                while True:
                     result = get_result_from_judge0(token)
                     if result and result.get('status', {}).get('id') == 3:  # Status 3 means completed
                         actual_output = result.get('stdout', '').strip()
@@ -302,22 +333,17 @@ def display_question(request, question_id):
                             'input': testcase[0],
                             'expected': expected_output,
                             'actual': actual_output,
-                            'point': testcase[2] if status == 'Correct' else 0,
                             'status': status,
+                            'test_id': testcase[2],
                         })
                         break
                     elif result and result.get('status', {}).get('id') in [4, 5]:  # Error or timeout
-                        error_message = result.get('stderr', 'Unknown error')
-                        print(error_message)
-                        results.append({'input': testcase[0], 'error': error_message, 'point': 0})
+                        results.append({'input': testcase[0], 'error': 'Execution error or timeout', 'test_id': testcase[2]})
                         break
                     retries += 1
                     time.sleep(2)
 
         correct_count = sum(1 for result in results if result.get('status') == 'Correct')
-        points = 0
-        for result in results:
-            points += result.get('point', 0)
 
         if correct_count == len(testcases):
             status = 'Accepted'
@@ -326,10 +352,17 @@ def display_question(request, question_id):
         else:
             status = 'Failed'
         
-        print(status, points)
-        query = "INSERT INTO submission (student_id, question_id, contest_id, evaluation_point, status) VALUES (%s, %s, %s, %s, %s)"
-        if current_contest != -1:
-            execute_raw_sql(query, [student_id, question_id, current_contest, points, status])
+        for result in results:
+            is_accepted = 'false'
+            if result.get('status') == 'Correct':
+                is_accepted = 'true'
+                
+            testcase_id = result.get('test_id')
+                
+            query = "INSERT INTO submissionline (submission_id, test_id, is_accepted) VALUES (%s, %s, %s)"
+            if current_contest != -1:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, [submission_id, testcase_id, is_accepted])
     
     query = "SELECT q.question_id, q.title, q.description FROM question as q where q.question_id = %s"
     with connection.cursor() as cursor:
@@ -350,12 +383,6 @@ def display_question(request, question_id):
         'question': questions,
         'submissions': submissions
     })
-
-# Helper function to execute raw SQL queries
-def execute_raw_sql(query, params):
-    with connection.cursor() as cursor:
-        cursor.execute(query, params)
-        return cursor.fetchall()
 
 """___________________________________________________________________________________"""
 
@@ -430,7 +457,7 @@ def profile(request):
                     (new_password, admin_id, )
                 )
             
-        query = "SELECT prof_id, (first_name || last_name) as name from professor where prof_id = %s"
+        query = "SELECT prof_id, (first_name || ' ' || last_name) as name from professor where prof_id = %s"
         with connection.cursor() as cursor:
             cursor.execute(
                 query,
@@ -443,7 +470,14 @@ def profile(request):
         
         return render(request, 'polls/users_profile.html', {"admin_name": admin_name})  # Updated path
     else:
-        return render(request, 'polls/student_profile.html')
+        query = "SELECT (s.first_name || ' ' || s.last_name) as name from student as s where s.student_id = %s"
+        with connection.cursor() as cursor:
+            cursor.execute(query, (student_id, ))
+            name = cursor.fetchone()  # Fetch all contest rows
+    
+        name = name[0]
+        
+        return render(request, 'polls/student_profile.html', {'name': name})
 
 def home(request):
     return render(request, 'polls/index.html')  # Home page
@@ -568,7 +602,18 @@ def add_contest(request):
     if not isAdmin:
         return render(request, 'polls/protect_admin_page.html')
 
+    if request.method == 'POST':
+        # Get data from html
+        contest_name = request.POST.get('contest_name')
+        
+        query = 'insert into contest (name, prof_id) values (%s, %s)'
+        with connection.cursor() as cursor:
+            cursor.execute(query, [contest_name, admin_id])
+
+        return JsonResponse({'success': 'Created'})
+    
     return render(request, 'polls/add_contest.html')
+
 
 def admin_view(request):
     global isLogin, isAdmin, current_contest
@@ -693,15 +738,13 @@ def add_question(request):
 
         question_id = contest_data[0]
 
-        for input_key, output_key in test_cases:
-            test_input = request.POST.get(input_key)
-            test_output = request.POST.get(output_key)
+        print(test_cases)
+
+        for test_input, test_output in test_cases:
             
-            query = "INSERT INTO test_case (input, output, question_id, point) VALUES (%s, %s, %s, 10)"
-            
+            query = "INSERT INTO test_case (input, output, question_id, test_point) VALUES (%s, %s, %s, 10)"
             with connection.cursor() as cursor:
                 cursor.execute(query, (test_input, test_output, question_id, ))
-                contest_data = cursor.fetchone()  # Fetch contest details
         
         query = "INSERT INTO question_contest (question_id, contest_id) VALUES (%s, %s)"
         with connection.cursor() as cursor:
@@ -711,7 +754,6 @@ def add_question(request):
 
     # Render the form page for GET requests
     return render(request, "polls/add_question_2.html")
-
 
 def view_leadboard(request):
     global isLogin, isAdmin, current_contest
@@ -757,23 +799,26 @@ def question_submission_details(request):
     return render(request, 'forld.html')
 
 def see_participants(request):
+    global isLogin, isAdmin, current_contest
     if request.method == "POST":
         import json
         data = json.loads(request.body)  # Parse JSON data
         action = data.get("action")
         item_id = data.get("id")
+
+        print(action, item_id)
         
         # Process the action and id
         if action == "accept":
-            query = "UPDATE participants set participant = %s where student_id = %s"
+            query = "UPDATE participants set participant = %s where student_id = %s and contest_id = %s"
             with connection.cursor() as cursor:
-                cursor.execute(query, ("Accepted", item_id, ))
+                cursor.execute(query, ("Accepted", item_id, current_contest, ))
+
         elif action == "reject":
-            query = "Delete from participants where student_id = %s"
+            query = "Delete from participants where student_id = %s and contest_id = %s"
             with connection.cursor() as cursor:
-                cursor.execute(query, (item_id, ))
+                cursor.execute(query, (item_id, current_contest, ))
             
-    global isLogin, isAdmin, current_contest
     if not isLogin:
         return render(request, 'polls/protect_not_login.html')
     
@@ -795,13 +840,6 @@ def see_participants(request):
 
 """____________________________________TEST_________________________________________________"""
 
-# Helper function to execute raw SQL
-def execute_raw_sql(query, params=None):
-    with connection.cursor() as cursor:
-        cursor.execute(query, params)
-        if query.strip().lower().startswith("select"):
-            return cursor.fetchall()
-        return None
 
 from django.utils.html import escape
 def convert_special_chars_to_html(text):

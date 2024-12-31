@@ -174,10 +174,11 @@
   <!-- Vendor JS Files -->
   <script>
     function addContest() {
-      // Opens a new window or tab with the "Add Contest" page
-      window.open("{% url 'add_contest' %}", '_blank', 'width=600,height=400');
+        // Opens a new tab with the "Add Contest" page
+        window.open("{% url 'add_contest' %}", '_blank');
     }
   </script>
+
   <script src="{% static 'polls/vendor/apexcharts/apexcharts.min.js' %}"></script>
   <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'polls/vendor/chart.js/chart.umd.js' %}"></script>

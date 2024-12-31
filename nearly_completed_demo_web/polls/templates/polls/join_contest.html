@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>See Participants</title>
+  <title>Join Contest</title>
 
   <!-- Bootstrap CSS -->
   <link href="{% static 'polls/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -113,11 +113,13 @@
     </div>
   </div>
 
+  <!-- CSRF Token -->
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
   <!-- Bootstrap JS -->
   <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
   <script>
-    // Event delegation for button actions
     document.body.addEventListener('click', function (event) {
       const target = event.target;
 
@@ -127,7 +129,7 @@
         const contestId = target.dataset.id;
 
         // CSRF token
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value || '{{ csrf_token }}';
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
         // Send the fetch request
         fetch("{% url 'join_contest' %}", {
@@ -144,14 +146,10 @@
           })
           .then(data => {
             if (data.message) {
-              alert(data.message);
-
-              // Remove the row from the table
-              const row = target.closest('tr');
-              row.remove();
-            } else {
-              console.warn('No message provided in response:', data);
+              alert(data.message); // Display a success message
             }
+            // Reload the page to reflect changes
+            window.location.reload();
           })
           .catch(error => {
             console.error('Error:', error);
