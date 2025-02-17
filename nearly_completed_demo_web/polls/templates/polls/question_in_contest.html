@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   
-  <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  <title>Dashboard - Admin</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -58,51 +58,8 @@
       background-color: #f8f9fa;
       font-family: 'Poppins', sans-serif;
     }
-
-    .btn-row {
-      display: flex;
-      /* justify-content: center; */
-      
-      gap: 15px;
-      margin: 15px 0;
-    }
-
-    .btn-row .btn {
-      background-color: #007bff;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 10px 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 300px;
-      text-decoration: none;
-      margin-right: 450px;
-    } 
-
-    .btn-row .btn:hover {
-      background-color: #0056b3;
-      text-decoration: none;
-    }
-
-    .card {
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      height: 100vh;
-    }
-
-    .card-title {
-      font-weight: bold;
-      font-size: 20px;
-      text-align: center;
-    }
-
-    .alert {
-      margin-bottom: 10px;
-    }
-
-    .alert-light-green {
+ 
+.alert-light-green {
     background-color: #90ee90;
     color: black;
 }
@@ -111,15 +68,68 @@
     background-color: #f08080;
     color: black;
 }
-  </style>
+</style>
 </head>
 
 <section class="section">
-    <div class="btn-row">
-      <a href="{% url 'add_question' %}" class="btn">Add question</a>
-      <a href="{% url 'view_leadboard' %}" class="btn">View leaderboard</a>
-      <a href="{% url 'see_participants' %}" class="btn">See Participants</a>
-    </div>
+  <!-- HTML -->
+    <!-- HTML -->
+<div class="btn-row">
+  <a href="{% url 'add_question' %}" class="btn primary-btn">Add question</a>
+  <a href="{% url 'view_leadboard' %}" class="btn primary-btn">View leaderboard</a>
+  <a href="{% url 'see_participants' %}" class="btn primary-btn">See Participants</a>
+</div>
+
+<!-- CSS -->
+<style>
+  /* Style for the button container */
+  .btn-row {
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    gap: 15px; /* Spacing between buttons */
+    margin-bottom: 20px; /* Space below the buttons */
+  }
+
+  /* Base button style */
+  .btn {
+    display: inline-block; /* Ensures buttons display correctly */
+    padding: 10px 20px; /* Adds padding to the button */
+    font-size: 16px; /* Sets font size */
+    font-weight: bold; /* Makes text bold */
+    text-decoration: none; /* Removes underline */
+    text-align: center; /* Centers text inside button */
+    border-radius: 5px; /* Rounds button corners */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition effect */
+  }
+
+  /* Style for primary buttons */
+  .primary-btn {
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border: 2px solid #0056b3; /* Border color */
+  }
+
+  /* Hover effect for primary buttons */
+  .primary-btn:hover {
+    background-color: #0056b3; /* Darker blue background on hover */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Adds shadow */
+  }
+
+  /* Optional responsive styling (for smaller screens) */
+  @media (max-width: 768px) {
+    .btn-row {
+      flex-direction: column; /* Stacks buttons vertically on small screens */
+      align-items: center; /* Centers them vertically */
+      gap: 10px; /* Smaller gap for vertical layout */
+    }
+
+    .btn {
+      width: 80%; /* Full-width buttons */
+    }
+  }
+</style>
+
+  
     <div class="row">
       <!-- Card 1 on the left -->
       <div class="col-lg-6">

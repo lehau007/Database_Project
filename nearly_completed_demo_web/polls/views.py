@@ -291,7 +291,6 @@ def display_question(request, question_id):
 
     if request.method == 'POST':
         code = request.POST.get('code', '')
-        print(code)
         language_id = int(request.POST.get('language_id', 54))  # Default to C++
         
         testcases_query = "SELECT input, output, test_id FROM test_case WHERE question_id = %s"
@@ -344,7 +343,7 @@ def display_question(request, question_id):
                     time.sleep(2)
 
         correct_count = sum(1 for result in results if result.get('status') == 'Correct')
-
+        status = None
         if correct_count == len(testcases):
             status = 'Accepted'
         elif correct_count > 0:
@@ -405,8 +404,7 @@ def signup_view(request):
             result = cursor.fetchone()
 
         if result[0] > 0:
-            messages.error(request, "Username already exists. Please choose a different one.")
-            return render(request, 'polls/signup.html')
+            return JsonResponse({"message": "Username already exists. Please choose a different one."})
 
         # Insert student
         with connection.cursor() as cursor:
@@ -418,7 +416,7 @@ def signup_view(request):
         messages.success(request, "Account successfully created. Redirecting...")
 
         # Redirect to the login page with a success message
-        return redirect('/polls/signup_success/')
+        return render(request, 'polls/signup_success.html')
 
     return render(request, 'polls/signup.html')
 
@@ -483,7 +481,7 @@ def home(request):
     return render(request, 'polls/index.html')  # Home page
 
 def login_view(request):
-    global student_id, isAdmin, isLogin
+    global student_id, isAdmin, isLogin, admin_id
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')

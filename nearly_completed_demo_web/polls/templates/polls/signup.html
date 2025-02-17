@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - eStartup Bootstrap Template</title>
+  <title>Signup</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -64,50 +64,80 @@
           </div><!-- End Info Item -->
 
         </div>
+        <style>
+          .form-control {
+  border: 1px solid #ddd;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+}
 
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.loading {
+  display: none;
+  color: blue;
+}
+
+.sent-message {
+  display: none;
+  color: green;
+}
+
+.btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn:hover {
+  background-color: #218838;
+}
+
+        </style>
         <div class="col-lg-8">
-          <form action="{% url 'signup' %}" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+          <form action="{% url 'signup' %}" method="post" class="php-email-form" target="_blank" data-aos="fade-up" data-aos-delay="200">
             {% csrf_token %}
             <div class="row gy-4">
         
+              <!-- First Name -->
               <div class="col-md-6">
                 <input type="text" name="first_name" class="form-control" placeholder="First name" required>
               </div>
         
+              <!-- Last Name -->
               <div class="col-md-6">
                 <input type="text" name="last_name" class="form-control" placeholder="Last name" required>
               </div>
         
+              <!-- Username -->
               <div class="col-md-12">
                 <input type="text" name="username" class="form-control" placeholder="Username" required>
               </div>
         
+              <!-- Password -->
               <div class="col-md-12">
                 <input type="password" name="password" class="form-control" placeholder="Password" required>
               </div>
         
+              <!-- Submit Button -->
               <div class="col-md-12 text-center">
-                <div class="loading">Loading</div>
-                <div class="error-message">
-                  {% if messages %}
-                  {% for message in messages %}
-                    <p>{{ message }}</p>
-                  {% endfor %}
-                  {% endif %}
-                </div>
-                <div class="sent-message">Account successfully created. Redirecting...</div>
-        
+                {% if messages %}
+                  <div class="error-message">
+                    {% for message in messages %}
+                      <p>{{ message }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
                 <button type="submit" class="btn btn-success">Sign Up</button>
               </div>
         
             </div>
           </form>
         </div>
-        
-        <!-- Include necessary JavaScript -->
-  <script src="{% static 'polls/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'polls/vendor/php-email-form/validate.js' %}"></script>
-  <script src="{% static 'polls/vendor/aos/aos.js' %}"></script>
-  <script src="{% static 'polls/vendor/glightbox/js/glightbox.min.js' %}"></script>
-  <script src="{% static 'polls/js/main.js' %}"></script>
-        
