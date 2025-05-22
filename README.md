@@ -70,3 +70,25 @@ python manage.py runserver
 ```
 
 Then open your browser and visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+
+### 5. Import the Database Schema
+
+To set up the initial database schema using the provided `project_ver3.sql` file:
+
+1. Open your terminal and log in to your PostgreSQL server:
+
+```bash
+psql -U your_username -d your_database_name
+```
+
+2. Once logged in, run the following command to import the schema:
+
+```sql
+\i path/to/database.sql
+```
+
+> Replace `path/to/project_ver3.sql` with the actual path to the `project_ver3.sql` file.
+
+After this step, your database will be populated with the necessary tables and data.
+
