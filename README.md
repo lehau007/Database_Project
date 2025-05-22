@@ -1,11 +1,72 @@
-After install all lib.
 
-To run this web in local host: 
+# Database_Project
 
-  1. Setting database:
-     Firstly, open folder "nearly completed demo web" in visual code such that link of terminal is this folder. After that, focus on folder "mysite", open settings.py
-     In this file, find database and change this code to your database name, your user, your password.
+This project is a web application built using Django to demonstrate the integration between web development and database management (PostgreSQL).
 
-  2. Run these command in terminal:
-     python manage.py migrate
-     python manage.py runserver
+## 📁 Project Structure
+
+```
+Database_Project/
+└── nearly_completed_demo_web/
+    ├── mysite/         # Django project folder
+    ├── manage.py       # Django management script
+```
+
+## 🛠️ Technologies Used
+
+- **Backend**: Python (Django)
+- **Frontend**: HTML, CSS, JavaScript
+- **Database**: PostgreSQL (PLpgSQL)
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/lehau007/Database_Project.git
+cd Database_Project/nearly_completed_demo_web
+```
+
+### 2. Install Dependencies
+
+Make sure you have Python and PostgreSQL installed. Then install the required Python libraries:
+
+```bash
+pip install -r requirements.txt
+```
+
+> If `requirements.txt` is not available, install Django manually:
+```bash
+pip install django
+```
+
+### 3. Configure the Database
+
+Open the folder `nearly_completed_demo_web` in **Visual Studio Code** (or any code editor). 
+
+- Navigate to `mysite/settings.py`
+- Find the `DATABASES` section and edit it to match your PostgreSQL setup:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'your_database_name',
+        'USER': 'your_username',
+        'PASSWORD': 'your_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+```
+
+### 4. Run the Web App Locally
+
+After configuring the database and installing all required libraries, run these commands in the terminal:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+Then open your browser and visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
